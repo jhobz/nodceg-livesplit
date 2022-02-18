@@ -37,5 +37,8 @@
     ]
   },
   "repository": "https://github.com/nodecg/nodecg.git",
-  "license": "GPL-3.0"
+  "license": "GPL-3.0",
+  "dependencies": {
+    "livesplit-client": "^1.0.0"
+  }
 }

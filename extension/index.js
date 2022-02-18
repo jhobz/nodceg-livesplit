@@ -1,10 +1,27 @@
 'use strict';
+const LiveSplitClient = require('livesplit-client')
 
-module.exports = function (nodecg) {
-	nodecg.log.info('Hello, from your bundle\'s extension!');
-	nodecg.log.info('I\'m where you put all your server-side code.');
-	nodecg.log.info(`To edit me, open "${__filename}" in your favorite text editor or IDE.`);
-	nodecg.log.info('You can use any libraries, frameworks, and tools you want. There are no limits.');
-	nodecg.log.info('Visit https://nodecg.com for full documentation.');
-	nodecg.log.info('Good luck!');
-};
+module.exports = nodecg => {
+	nodecg.log.info('Hello, from your bundle\'s extension!'); // Semi-colon needed here because of self-calling function
+	(async () => {
+		try {
+			const client = new LiveSplitClient(`${nodecg.bundleConfig.url}:${nodecg.bundleConfig.port}`)
+
+			client.on('connected', () => {
+				nodecg.log.info('Connected to ls')
+			})
+
+			client.on('disconnected', () => {
+				nodecg.log.info('Disconnected from ls')
+			})
+			
+			await client.connect()
+			const info = await client.getAll()
+			nodecg.log.info('Summary:', info)
+
+			client.disconnect()
+		} catch (err) {
+			nodecg.log.info(err)
+		}
+	})()
+}

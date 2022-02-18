@@ -1,0 +1,41 @@
+{
+  "name": "livesplit",
+  "version": "0.0.0",
+  "description": "Connects to a local instance of LiveSplit to display information or control the timer",
+  "homepage": "https://github.com/jhobz/nodecg-livesplit",
+  "author": {
+    "name": "Jeff Hobson",
+    "email": "jeffrey296@gmail.com",
+    "url": "https://github.com/jhobz"
+  },
+  "files": [
+    "dashboard",
+    "graphics",
+    "extension.js",
+    "extension"
+  ],
+  "keywords": [
+    "",
+    "nodecg-bundle"
+  ],
+  "nodecg": {
+    "compatibleRange": "^1.1.1",
+    "dashboardPanels": [
+      {
+        "name": "livesplit",
+        "title": "LiveSplit",
+        "width": 2,
+        "file": "livesplit.html"
+      }
+    ],
+    "graphics": [
+      {
+        "file": "index.html",
+        "width": 1920,
+        "height": 1080
+      }
+    ]
+  },
+  "repository": "https://github.com/nodecg/nodecg.git",
+  "license": "GPL-3.0"
+}

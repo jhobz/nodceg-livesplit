@@ -9,25 +9,45 @@
 	</style>
 </head>
 <body>
-	<p>
-		Hello, I'm one of the panels in your bundle!
-		I'm where you put your controls.
-	</p>
-
-	<p>To edit me, open "<span id="path" class="monospace"></span>" in your favorite text editor or IDE.</p>
-
-	<p>
-		You can use any libraries, frameworks, and tools you want.
-		The only limit of panels is that they cannot render outside of their
-		<span class="monospace">&lt;iframe&gt;</span>'s bounding box.
-	</p>
-
-	<p>Visit <a href="https://nodecg.com" target="_blank" rel="noopener">https://nodecg.com</a> for full documentation.</p>
-
-	<p>You've got this!</p>
-
+	<div>
+		<div>
+			<span>Status: </span><span id="connection-status"></span>
+		</div>
+		<div>
+			<button id="btn-connect"></button>
+		</div>
+		<br />
+		<div>
+			<span>Current Timer Phase: </span><span id="currentTimerPhase"></span><br />
+			<span>Total Delta: </span><span id="delta"></span><br />
+			<span>Last Split Time: </span><span id="lastSplitTime"></span><br />
+			<span>Comparison Split Time: </span><span id="comparisonSplitTime"></span><br />
+			<span>Current Time: </span><span id="currentTime"></span><br />
+			<span>Final Time: </span><span id="finalTime"></span><br />
+			<span>PredictedTime: </span><span id="predictedTime"></span><br />
+			<span>BestPossibleTime: </span><span id="bestPossibleTime"></span><br />
+			<span>Split Index: </span><span id="splitIndex"></span><br />
+			<span>Current Split Name: </span><span id="currentSplitName"></span><br />
+			<span>Previous Split Name: </span><span id="previousSplitname"></span><br />
+		</div>
+	</div>
 	<script>
-		document.getElementById('path').textContent = `nodecg${window.location.pathname}`;
+		const rLivesplit = nodecg.Replicant('livesplit')
+		rLivesplit.on('change', (newValue, oldValue) => {
+			const connStatus = newValue.connection.status
+			if (connStatus === 'connected') {
+				document.getElementById('btn-connect').innerText = 'Disconnect'
+			} else {
+				document.getElementById('btn-connect').innerText = 'Connect'
+			}
+			document.getElementById('connection-status').textContent = `${connStatus.charAt(0).toUpperCase()}${connStatus.slice(1)} ${connStatus === 'connected' ? 'to' : 'from'} LiveSplit`
+
+			if (newValue.timer) {
+				Object.keys(newValue.timer).forEach( key => {
+					document.getElementById(key).textContent = newValue.timer[key]
+				})
+			}
+		})
 
 		// You can access the NodeCG api anytime from the `window.nodecg` object
 		// Or just `nodecg` for short. Like this!:

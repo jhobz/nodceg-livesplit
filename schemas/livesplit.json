@@ -10,9 +10,11 @@
                 "status": {
                     "type": "string",
                     "description": "The status of the connection, which is a string of one of the following values: 'connected','disconnected'",
-                    "enum": ["connected", "disconnected"]
+                    "enum": ["connected", "disconnected"],
+                    "default": "disconnected"
                 }
-            }
+            },
+            "required": ["status"]
         },
         "timer": {
             "type": "object",
@@ -31,5 +33,6 @@
                 "previousSplitName": { "type": "string" }
             }
         }
-    }
+    },
+    "required": ["connection"]
 }

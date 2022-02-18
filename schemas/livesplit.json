@@ -1,0 +1,35 @@
+{
+    "$schema":"http://json-schema.org/draft-04/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "connection": {
+            "type": "object",
+            "description": "Properties related to the LiveSplit connection.",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "description": "The status of the connection, which is a string of one of the following values: 'connected','disconnected'",
+                    "enum": ["connected", "disconnected"]
+                }
+            }
+        },
+        "timer": {
+            "type": "object",
+            "description": "Properties related to the state of the connected timer.",
+            "properties": {
+                "currentTimerPhase": { "type": "string", "enum": ["Running", "Paused", "NotRunning", "Ended"] },
+                "delta": { "type": "string" },
+                "lastSplitTime": { "type": "string" },
+                "comparisonSplitTime": { "type": "string" },
+                "currentTime": { "type": "string" },
+                "finalTime": { "type": "string" },
+                "predictedTime": { "type": "string" },
+                "bestPossibleTime": { "type": "string" },
+                "splitIndex": { "type": "string" },
+                "currentSplitName": { "type": "string" },
+                "previousSplitName": { "type": "string" }
+            }
+        }
+    }
+}

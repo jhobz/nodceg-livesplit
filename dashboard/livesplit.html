@@ -17,7 +17,7 @@
 			<button id="btn-connect"></button>
 		</div>
 		<br />
-		<div>
+		<div id="timer-info">
 			<span>Current Timer Phase: </span><span id="currentTimerPhase"></span><br />
 			<span>Total Delta: </span><span id="delta"></span><br />
 			<span>Last Split Time: </span><span id="lastSplitTime"></span><br />
@@ -33,12 +33,14 @@
 	</div>
 	<script>
 		const rLivesplit = nodecg.Replicant('livesplit')
+		const button = document.getElementById('btn-connect')
+
 		rLivesplit.on('change', (newValue, oldValue) => {
 			const connStatus = newValue.connection.status
 			if (connStatus === 'connected') {
-				document.getElementById('btn-connect').innerText = 'Disconnect'
+				button.innerText = 'Disconnect'
 			} else {
-				document.getElementById('btn-connect').innerText = 'Connect'
+				button.innerText = 'Connect'
 			}
 			document.getElementById('connection-status').textContent = `${connStatus.charAt(0).toUpperCase()}${connStatus.slice(1)} ${connStatus === 'connected' ? 'to' : 'from'} LiveSplit`
 
@@ -46,12 +48,19 @@
 				Object.keys(newValue.timer).forEach( key => {
 					document.getElementById(key).textContent = newValue.timer[key]
 				})
+				document.getElementById('timer-info').style.display = 'block'
+			} else {
+				document.getElementById('timer-info').style.display = 'none'
 			}
 		})
 
-		// You can access the NodeCG api anytime from the `window.nodecg` object
-		// Or just `nodecg` for short. Like this!:
-		nodecg.log.info('Here\'s an example of using NodeCG\'s logging API!');
+		button.onclick = (ev) => {
+			if (button.innerText === 'Connect') {
+				nodecg.sendMessage('connect')
+			} else {
+				nodecg.sendMessage('disconnect')
+			}
+		}
 	</script>
 </body>
 </html>

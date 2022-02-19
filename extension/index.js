@@ -3,31 +3,61 @@ const LiveSplitClient = require('livesplit-client')
 
 module.exports = nodecg => {
 	const rLivesplit = nodecg.Replicant('livesplit')
-	
-	;(async () => {
-		try {
-			const client = new LiveSplitClient(`${nodecg.bundleConfig.url}:${nodecg.bundleConfig.port}`)
+	const client = new LiveSplitClient(`${nodecg.bundleConfig.url}:${nodecg.bundleConfig.port}`)
+	let timerHandle
 
-			client.on('connected', () => {
-				nodecg.log.info('Connected to ls')
-				rLivesplit.value.connection.status = 'connected'
-			})
+	// Reset info since connection has been reset
+	rLivesplit.value.connection.status = 'disconnected'
+	rLivesplit.value.timer = undefined
 
-			client.on('disconnected', () => {
-				nodecg.log.info('Disconnected from ls')
-				rLivesplit.value.connection.status = 'disconnected'
-			})
-			
-			await client.connect()
-			const info = await client.getAll()
-			nodecg.log.info('Summary:', info)
-			rLivesplit.value.timer = info
-
-			setInterval(async () => {
+	client.on('connected', () => {
+		nodecg.log.info('Connected to ls')
+		rLivesplit.value.connection.status = 'connected'
+		timerHandle = setInterval(async () => {
+			try {
 				rLivesplit.value.timer = await client.getAll()
-			}, 1000)
-		} catch (err) {
-			nodecg.log.info(err)
+			} catch (err) {
+				nodecg.log.error(err)
+			}
+			nodecg.log.info(rLivesplit.value)
+		}, 150)
+	})
+
+	client.on('disconnected', () => {
+		nodecg.log.info('Disconnected from ls')
+		rLivesplit.value.connection.status = 'disconnected'
+	})
+
+	// Message: connect
+	nodecg.listenFor('connect', async (_, ack) => {
+		if (rLivesplit.value.connection.status === 'connected') {
+			ack(null)
+			return
 		}
-	})()
+
+		try {
+			await client.connect()
+		} catch (err) {
+			ack(new Error('Could not connect to LiveSplit. Is the LiveSplit Server running?', err))
+		}
+
+		ack(null)
+	})
+
+	// Message: disconnect
+	nodecg.listenFor('disconnect', (_, ack) => {
+		if (rLivesplit.value.connection.status === 'disconnected') {
+			ack(null)
+			return
+		}
+
+		try {
+			clearInterval(timerHandle)
+			client.disconnect()
+		} catch (err) {
+			ack(new Error('Could not disconnect from LiveSplit.', err))
+		}
+
+		ack(null)
+	})
 }

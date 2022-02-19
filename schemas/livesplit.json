@@ -21,17 +21,18 @@
             "description": "Properties related to the state of the connected timer.",
             "properties": {
                 "currentTimerPhase": { "type": "string", "enum": ["Running", "Paused", "NotRunning", "Ended"] },
-                "delta": { "type": "string" },
-                "lastSplitTime": { "type": "string" },
-                "comparisonSplitTime": { "type": "string" },
+                "delta": { "type": ["string", "null"] },
+                "lastSplitTime": { "type": ["string", "null"] },
+                "comparisonSplitTime": { "type": ["string", "null"] },
                 "currentTime": { "type": "string" },
                 "finalTime": { "type": "string" },
                 "predictedTime": { "type": "string" },
                 "bestPossibleTime": { "type": "string" },
                 "splitIndex": { "type": "string" },
-                "currentSplitName": { "type": "string" },
-                "previousSplitName": { "type": "string" }
-            }
+                "currentSplitName": { "type": ["string", "null"] },
+                "previousSplitname": { "type": ["string", "null"] }
+            },
+            "additionalProperties": false
         }
     },
     "required": ["connection"]

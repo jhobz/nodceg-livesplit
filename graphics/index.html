@@ -10,28 +10,50 @@
 		.monospace {
 			font-family: monospace;
 		}
+
+		h2 {
+			border-bottom: 1px solid rgba(0, 0, 0, 0.205);
+		}
+
+		label {
+			font-weight: bold;
+		}
 	</style>
 </head>
 <body>
-	<p>
-		Hello, I'm one of the graphics in your bundle!
-		I'm where you put the graphics you want to run in your broadcast software!
-	</p>
+	<p id="connection-status"></p>
 
-	<p>To edit me, open "<span id="path" class="monospace"></span>" in your favorite text editor or IDE.</p>
-
-	<p>You can use any libraries, frameworks, and tools you want. There are no limits.</p>
-
-	<p>Visit <a href="https://nodecg.com" target="_blank" rel="noopener">https://nodecg.com</a> for full documentation.</p>
-
-	<p>Have fun!</p>
+	<div id="timer-info">
+		<h2>Timer Info</h2>
+		<label>Current Timer Phase: </label><span id="currentTimerPhase"></span><br />
+		<label>Total Delta: </label><span id="delta"></span><br />
+		<label>Last Split Time: </label><span id="lastSplitTime"></span><br />
+		<label>Comparison Split Time: </label><span id="comparisonSplitTime"></span><br />
+		<label>Current Time: </label><span id="currentTime"></span><br />
+		<label>Final Time: </label><span id="finalTime"></span><br />
+		<label>PredictedTime: </label><span id="predictedTime"></span><br />
+		<label>BestPossibleTime: </label><span id="bestPossibleTime"></span><br />
+		<label>Split Index: </label><span id="splitIndex"></span><br />
+		<label>Current Split Name: </label><span id="currentSplitName"></span><br />
+		<label>Previous Split Name: </label><span id="previousSplitname"></span><br />
+	</div>
 
 	<script>
-		document.getElementById('path').textContent = `nodecg${window.location.pathname}`;
+		const rLivesplit = nodecg.Replicant('livesplit')
 
-		// You can access the NodeCG api anytime from the `window.nodecg` object
-		// Or just `nodecg` for short. Like this!:
-		nodecg.log.info('Here\'s an example of using NodeCG\'s logging API!');
+		rLivesplit.on('change', (newValue, oldValue) => {
+			const connStatus = newValue.connection.status
+			document.getElementById('connection-status').textContent = `${connStatus.charAt(0).toUpperCase()}${connStatus.slice(1)} ${connStatus === 'connected' ? 'to' : 'from'} LiveSplit`
+
+			if (newValue.timer) {
+				Object.keys(newValue.timer).forEach( key => {
+					document.getElementById(key).textContent = newValue.timer[key]
+				})
+				document.getElementById('timer-info').style.display = 'block'
+			} else {
+				document.getElementById('timer-info').style.display = 'none'
+			}
+		})
 	</script>
 </body>
 </html>

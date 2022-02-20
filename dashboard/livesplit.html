@@ -6,6 +6,14 @@
 		.monospace {
 			font-family: monospace;
 		}
+
+		h2 {
+			border-bottom: 1px solid rgba(255, 255, 255, 0.226)
+		}
+
+		label {
+			font-weight: bold;
+		}
 	</style>
 </head>
 <body>
@@ -18,17 +26,18 @@
 		</div>
 		<br />
 		<div id="timer-info">
-			<span>Current Timer Phase: </span><span id="currentTimerPhase"></span><br />
-			<span>Total Delta: </span><span id="delta"></span><br />
-			<span>Last Split Time: </span><span id="lastSplitTime"></span><br />
-			<span>Comparison Split Time: </span><span id="comparisonSplitTime"></span><br />
-			<span>Current Time: </span><span id="currentTime"></span><br />
-			<span>Final Time: </span><span id="finalTime"></span><br />
-			<span>PredictedTime: </span><span id="predictedTime"></span><br />
-			<span>BestPossibleTime: </span><span id="bestPossibleTime"></span><br />
-			<span>Split Index: </span><span id="splitIndex"></span><br />
-			<span>Current Split Name: </span><span id="currentSplitName"></span><br />
-			<span>Previous Split Name: </span><span id="previousSplitname"></span><br />
+			<h2>Timer Info</h2>
+			<label>Current Timer Phase: </label><span id="currentTimerPhase"></span><br />
+			<label>Total Delta: </label><span id="delta"></span><br />
+			<label>Last Split Time: </label><span id="lastSplitTime"></span><br />
+			<label>Comparison Split Time: </label><span id="comparisonSplitTime"></span><br />
+			<label>Current Time: </label><span id="currentTime"></span><br />
+			<label>Final Time: </label><span id="finalTime"></span><br />
+			<label>PredictedTime: </label><span id="predictedTime"></span><br />
+			<label>BestPossibleTime: </label><span id="bestPossibleTime"></span><br />
+			<label>Split Index: </label><span id="splitIndex"></span><br />
+			<label>Current Split Name: </label><span id="currentSplitName"></span><br />
+			<label>Previous Split Name: </label><span id="previousSplitname"></span><br />
 		</div>
 	</div>
 	<script>

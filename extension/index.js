@@ -26,6 +26,7 @@ module.exports = nodecg => {
 	client.on('disconnected', () => {
 		nodecg.log.info('Disconnected from ls')
 		rLivesplit.value.connection.status = 'disconnected'
+		rLivesplit.value.timer = undefined
 	})
 
 	// Message: connect

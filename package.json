@@ -19,6 +19,13 @@
     "nodecg-bundle"
   ],
   "nodecg": {
+    "assetCategories": [
+      {
+        "name": "logos",
+        "title": "Logos",
+        "allowedTypes": ["jpg", "jpeg", "gif", "png"]
+      }
+    ],
     "compatibleRange": "^1.1.1",
     "dashboardPanels": [
       {

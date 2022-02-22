@@ -29,6 +29,11 @@ module.exports = nodecg => {
 		rLivesplit.value.timer = undefined
 	})
 
+	// Required, even if the error is being caught elsewhere. Otherwise NodeCG will exit on socket error
+	client.on('error', (err) => {
+		nodecg.log.error(err)
+	})
+
 	// Message: connect
 	nodecg.listenFor('connect', async (_, ack) => {
 		if (rLivesplit.value.connection.status === 'connected') {
@@ -38,8 +43,10 @@ module.exports = nodecg => {
 
 		try {
 			await client.connect()
-		} catch (err) {
+		} catch(err) {
+			nodecg.log.info('there was an error with the promise')
 			ack(new Error('Could not connect to LiveSplit. Is the LiveSplit Server running?', err))
+			return
 		}
 
 		ack(null)

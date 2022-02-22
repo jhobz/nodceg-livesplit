@@ -66,6 +66,11 @@
 		button.onclick = (ev) => {
 			if (button.innerText === 'Connect') {
 				nodecg.sendMessage('connect')
+					.then(result => {
+						console.log('connection successful')
+					}).catch(error => {
+						console.error(error)
+					})
 			} else {
 				nodecg.sendMessage('disconnect')
 			}

@@ -19,7 +19,6 @@ module.exports = nodecg => {
 			} catch (err) {
 				nodecg.log.error(err)
 			}
-			nodecg.log.info(rLivesplit.value)
 		}, 150)
 	})
 

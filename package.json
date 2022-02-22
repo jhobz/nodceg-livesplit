@@ -39,6 +39,6 @@
   "repository": "https://github.com/nodecg/nodecg.git",
   "license": "GPL-3.0",
   "dependencies": {
-    "livesplit-client": "^1.0.0"
+    "livesplit-client": "satanch/node-livesplit-client#df280d726f5fc9cf5690c91f44a24a466e5f1a25"
   }
 }

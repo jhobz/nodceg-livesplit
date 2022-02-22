@@ -30,7 +30,7 @@
                 "bestPossibleTime": { "type": "string" },
                 "splitIndex": { "type": "string" },
                 "currentSplitName": { "type": ["string", "null"] },
-                "previousSplitname": { "type": ["string", "null"] }
+                "previousSplitName": { "type": ["string", "null"] }
             },
             "additionalProperties": false
         }

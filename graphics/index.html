@@ -13,6 +13,9 @@
 			--color-black: #1a1a1a;
 			--color-ahead: #99ff99;
 			--color-behind: #ff9999;
+
+			--circle-logo-inner-diameter: 70px;
+			--circle-logo-outer-diameter: calc(70px + 2pt);
 		}
 
 		/* css reset */
@@ -98,21 +101,22 @@
 
 		.widget-inner-left,
 		.widget-inner-right {
-			width: 50%;
-			max-width: calc((418px - 75px) / 2 - (0.08 * (418px / 2))); /* half of container width (after gap) - margins */
-			max-height: 100%;
-			flex-grow: 0;
 			display: flex;
+			position: relative;
+			width: 50%;
+			height: 100%;
+			max-width: calc((418px - 75px) / 2 - (0.08 * (418px / 2))); /* half of container width (after gap) - margins */
+			flex-grow: 0;
 			white-space: nowrap;
 		}
 		.widget-inner-left {
-			margin-left: 4%;
-			clip-path: polygon(-8.27% 0, 100% 0, 100% 100%, -1% 100%);
+			margin-left: 3.83%;
+			clip-path: polygon(-10% 0, 110% 0, 110% 100%, 0 100%);
 			justify-content: flex-end; /* align contents to right when greater than max-width */
 		}
 		.widget-inner-right {
-			margin-right: 4%;
-			clip-path: polygon(0 0, 108.27% 0, 101% 100%, 0 100%);
+			margin-right: 3.83%;
+			clip-path: polygon(-10% 0, 110% 0, 100% 100%, -10% 100%);
 			justify-content: flex-start; /* unnecessary, but being explicit to match -left */
 		}
 
@@ -125,15 +129,14 @@
 			position: absolute;
 			left: 50%;
 			transform: translate(-50%, 0);
-			width: 70px;
-			height: 70px;
+			width: var(--circle-logo-inner-diameter);
+			height: var(--circle-logo-inner-diameter);
 			background-color: var(--color-secondary);
 			background-position: center;
 			background-size: contain;
 			background-repeat: no-repeat;
 			border-radius: 50%;
 			border: 2pt solid var(--color-black);
-			overflow: hidden;
 			box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.75);
 		}
 
@@ -217,12 +220,12 @@
 						<span class="timer-main">5:09:18</span><span class="timer-sub">.45</span>
 					</div>
 				</div>
-				<div class="widget-inner-circle"></div>
 				<div class="widget-inner-right">
 					<div id="widget-timer-delta" class="timer">
 						<span class="timer-main">-4:17</span><span class="timer-sub">.36</span>
 					</div>
 				</div>
+				<div class="widget-inner-circle"></div>
 			</div>
 		</div>
 		<div class="widget-lower-border">

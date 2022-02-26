@@ -209,6 +209,51 @@
 			display: flex;
 			justify-content: center;
 		}
+
+		/* animations */
+		.animation-container {
+			position: absolute;
+			/* background-color: blueviolet; */
+			width: calc(105% + (var(--circle-logo-outer-diameter) / 2)); /* 105% because 100 + half of skew triangle width */
+			height: 100%;
+			/* overflow: visible; */
+		}
+
+		.widget-inner-right .animation-container {
+			left: calc(-1 * var(--circle-logo-outer-diameter) / 2);
+			transform: skewX(-15deg);
+		}
+
+		.widget-inner-left .animation-container {
+			right: calc(-1 * var(--circle-logo-outer-diameter) / 2);
+			transform: skewX(15deg);
+		}
+
+		.transition-box {
+			display: flex;
+			position: absolute;
+			height: 100%;
+			background-color: var(--color-accent);
+			justify-content: center;
+			align-items: center;
+		}
+
+		.transition-box-small {
+			width: 15px;
+		}
+
+		.transition-box-large {
+			width: 0;
+			overflow: hidden;
+		}
+
+		.widget-inner-left .transition-box {
+			right: 0;
+		}
+
+		.widget-inner-right .transition-box {
+			left: 0; /* technically unnecessary, but kept in order to be clear that this is the animated property */
+		}
 	</style>
 </head>
 <body>
@@ -216,11 +261,23 @@
 		<div class="widget-upper-border">
 			<div class="widget-upper">
 				<div class="widget-inner-left">
+					<div class="widget-left-animations animation-container">
+						<div class="transition-box transition-box-small"></div>
+						<div class="transition-box transition-box-large">
+							<p class="text transition-box-text" id="widget-left-transition-text">WORDS</p>
+						</div>
+					</div>
 					<div id="widget-timer-current" class="timer">
 						<span class="timer-main">5:09:18</span><span class="timer-sub">.45</span>
 					</div>
 				</div>
 				<div class="widget-inner-right">
+					<div class="widget-right-animations animation-container">
+						<div class="transition-box transition-box-small"></div>
+						<div class="transition-box transition-box-large">
+							<p class="text transition-box-text" id="widget-right-transition-text">DELTA</p>
+						</div>
+					</div>
 					<div id="widget-timer-delta" class="timer">
 						<span class="timer-main">-4:17</span><span class="timer-sub">.36</span>
 					</div>
@@ -230,6 +287,7 @@
 		</div>
 		<div class="widget-lower-border">
 			<div class="widget-lower">
+				<div class="widget-lower-animations animation-container"></div>
 				<div id="widget-info-splitName" class="text">
 					<span>KH2FM - Any% Critical Mode</span>
 				</div>

@@ -23,7 +23,12 @@
       {
         "name": "logos",
         "title": "Logos",
-        "allowedTypes": ["jpg", "jpeg", "gif", "png"]
+        "allowedTypes": [
+          "jpg",
+          "jpeg",
+          "gif",
+          "png"
+        ]
       }
     ],
     "compatibleRange": "^1.1.1",
@@ -46,6 +51,7 @@
   "repository": "https://github.com/nodecg/nodecg.git",
   "license": "GPL-3.0",
   "dependencies": {
+    "animejs": "^3.2.1",
     "livesplit-client": "satanch/node-livesplit-client#df280d726f5fc9cf5690c91f44a24a466e5f1a25"
   }
 }

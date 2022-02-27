@@ -199,7 +199,7 @@
 			color: var(--color-behind);
 		}
 
-		/* text info */
+		/* information displays */
 		.text {
 			font-family: apotek-cond, sans-serif;
 			font-weight: 300;
@@ -208,6 +208,10 @@
 			line-height: 1em;
 			display: flex;
 			justify-content: center;
+		}
+
+		.hidden {
+			display: none;
 		}
 
 		/* animations */
@@ -278,8 +282,14 @@
 							<p class="text transition-box-text" id="widget-right-transition-text">DELTA</p>
 						</div>
 					</div>
-					<div id="widget-timer-delta" class="timer">
+					<div id="widget-timer-delta" class="timer info-display">
 						<span class="timer-main">-4:17</span><span class="timer-sub">.36</span>
+					</div>
+					<div id="widget-timer-bestPossibleTime" class="timer info-display hidden">
+						<span class="timer-main">3:17</span><span class="timer-sub">.72</span>
+					</div>
+					<div id="widget-timer-finalTime" class="timer info-display hidden">
+						<span class="timer-main">9:17:00</span><span class="timer-sub">.72</span>
 					</div>
 				</div>
 				<div class="widget-inner-circle"></div>
@@ -300,8 +310,13 @@
 	<p id="connection-status"></p>
 
 	<script>
+		/* =================== CONSTANTS =================== */
+
 		const rLivesplit = nodecg.Replicant('livesplit')
 		const rLogos = nodecg.Replicant('assets:logos')
+		const infoDisplays = ['delta', 'bestPossibleTime', 'finalTime']
+
+		/* =================== REPLICANTS =================== */
 
 		rLivesplit.on('change', (newValue, oldValue) => {
 			const connStatus = newValue.connection.status
@@ -313,10 +328,15 @@
 				// document.querySelector('#widget-timer-current .timer-main').innerText = newValue.timer.currentTime.slice(0, -2)
 				// document.querySelector('#widget-timer-current .timer-sub').innerText = newValue.timer.currentTime.slice(-2)
 
-				document.querySelector('#widget-timer-delta .timer-main').innerText = newValue.timer.delta.slice(0, -2)
-				document.querySelector('#widget-timer-delta .timer-sub').innerText = newValue.timer.delta.slice(-2)
+				Object.keys(newValue.timer).forEach((k, i) => {
+					if (infoDisplays.includes(k)) {
+						const query = `#widget-timer-${k}`
+						document.querySelector(query + ' .timer-main').innerText = newValue.timer[k].slice(0, -2)
+						document.querySelector(query + ' .timer-sub').innerText = newValue.timer[k].slice(-2)
+					}
+				})
 
-				if (newValue.timer.delta.charAt(0) === '+') {
+				if (newValue.timer.delta && newValue.timer.delta.charAt(0) === '+') {
 					document.getElementById('widget-timer-delta').classList.add('timer-behind')
 					document.getElementById('widget-timer-delta').classList.remove('timer-ahead')
 				} else {
@@ -327,9 +347,26 @@
 		})
 
 		rLogos.on('change', (newValue, oldValue) => {
-			console.log(newValue[0])
 			document.querySelector('.widget-inner-circle').style.backgroundImage = `url('${newValue[0].url}')`
 		})
+
+		/* =================== MESSAGES =================== */
+
+		nodecg.listenFor('changeInfoDisplay', (_, ack) => {
+			changeInfoDisplay()
+		})
+
+		let currentInfoIndex = 0
+		function changeInfoDisplay(playAnimation = true) {
+			if (playAnimation) {
+				// doPlayAnimation()
+				// This may need a timeout to not block info change
+			}
+
+			document.getElementById(`widget-timer-${infoDisplays[currentInfoIndex]}`).classList.add('hidden')
+			currentInfoIndex = currentInfoIndex === infoDisplays.length - 1 ? 0 : currentInfoIndex + 1
+			document.getElementById(`widget-timer-${infoDisplays[currentInfoIndex]}`).classList.remove('hidden')
+		}
 	</script>
 </body>
 </html>

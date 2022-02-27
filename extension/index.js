@@ -4,7 +4,8 @@ const LiveSplitClient = require('livesplit-client')
 module.exports = nodecg => {
 	const rLivesplit = nodecg.Replicant('livesplit')
 	const client = new LiveSplitClient(`${nodecg.bundleConfig.url}:${nodecg.bundleConfig.port}`)
-	let timerHandle
+	const infoDisplayChangeInterval = 1000
+	let timerHandle, infoDisplayChangeHandle
 
 	// Reset info since connection has been reset
 	rLivesplit.value.connection.status = 'disconnected'
@@ -67,4 +68,9 @@ module.exports = nodecg => {
 
 		ack(null)
 	})
+
+	// Message: changeInfoDisplay
+	infoDisplayChangeHandle = setInterval(() => {
+		nodecg.sendMessage('changeInfoDisplay')
+	}, infoDisplayChangeInterval)
 }

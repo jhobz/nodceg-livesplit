@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
 	<link rel="stylesheet" href="https://use.typekit.net/eur4mqo.css">
+	<script src="../node_modules/animejs/lib/anime.min.js"></script>
+	<script src="../node_modules/fitty/dist/fitty.min.js"></script>
 	<style>
 		/* variables */
 		:root {
@@ -201,6 +203,8 @@
 
 		/* information displays */
 		.text {
+			width: 100%;
+			height: 100%;
 			font-family: apotek-cond, sans-serif;
 			font-weight: 300;
 			font-style: normal;
@@ -208,6 +212,21 @@
 			line-height: 1em;
 			display: flex;
 			justify-content: center;
+			align-items: center;
+		}
+
+		/* p tags within this class will have their font size automatically scaled to fit */
+		.shrink-fit {
+			height: 75%;
+			width: 80%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.shrink-fit > p {
+			display: inline-block;
+			white-space: nowrap;
 		}
 
 		.hidden {
@@ -217,10 +236,9 @@
 		/* animations */
 		.animation-container {
 			position: absolute;
-			/* background-color: blueviolet; */
 			width: calc(105% + (var(--circle-logo-outer-diameter) / 2)); /* 105% because 100 + half of skew triangle width */
 			height: 100%;
-			/* overflow: visible; */
+			visibility: hidden;
 		}
 
 		.widget-inner-right .animation-container {
@@ -253,10 +271,19 @@
 
 		.widget-inner-left .transition-box {
 			right: 0;
+			transform-origin: right center;
 		}
 
 		.widget-inner-right .transition-box {
 			left: 0; /* technically unnecessary, but kept in order to be clear that this is the animated property */
+			transform-origin: left center;
+		}
+
+		.transition-box-text {
+			color: var(--color-black);
+			font-size: 36pt;
+			font-weight: 500;
+			font-variant: small-caps;
 		}
 	</style>
 </head>
@@ -268,7 +295,11 @@
 					<div class="widget-left-animations animation-container">
 						<div class="transition-box transition-box-small"></div>
 						<div class="transition-box transition-box-large">
-							<p class="text transition-box-text" id="widget-left-transition-text">WORDS</p>
+						</div>
+						<div class="text">
+							<div class="shrink-fit">
+								<p class="transition-box-text" id="widget-left-transition-text">WORDS</p>
+							</div>
 						</div>
 					</div>
 					<div id="widget-timer-current" class="timer">
@@ -278,8 +309,11 @@
 				<div class="widget-inner-right">
 					<div class="widget-right-animations animation-container">
 						<div class="transition-box transition-box-small"></div>
-						<div class="transition-box transition-box-large">
-							<p class="text transition-box-text" id="widget-right-transition-text">DELTA</p>
+						<div class="transition-box transition-box-large"></div>
+						<div class="text">
+							<div class="shrink-fit">
+								<p class="transition-box-text" id="widget-right-transition-text">DELTA</p>
+							</div>
 						</div>
 					</div>
 					<div id="widget-timer-delta" class="timer info-display">
@@ -299,7 +333,9 @@
 			<div class="widget-lower">
 				<div class="widget-lower-animations animation-container"></div>
 				<div id="widget-info-splitName" class="text">
-					<span>KH2FM - Any% Critical Mode</span>
+					<div class="shrink-fit">
+						<p>KH2FM - Any% Critical Mode</p>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -310,11 +346,17 @@
 	<p id="connection-status"></p>
 
 	<script>
-		/* =================== CONSTANTS =================== */
+		/* =================== VARIABLES =================== */
 
 		const rLivesplit = nodecg.Replicant('livesplit')
 		const rLogos = nodecg.Replicant('assets:logos')
 		const infoDisplays = ['delta', 'bestPossibleTime', 'finalTime']
+		const transitionTimeline = createTransitionTimeline()
+		const totalTransitionTime = 2850
+		const safeTransitionFrame = totalTransitionTime / 2
+
+		let currentInfoIndex = 0
+
 
 		/* =================== REPLICANTS =================== */
 
@@ -350,23 +392,84 @@
 			document.querySelector('.widget-inner-circle').style.backgroundImage = `url('${newValue[0].url}')`
 		})
 
+
 		/* =================== MESSAGES =================== */
 
 		nodecg.listenFor('changeInfoDisplay', (_, ack) => {
 			changeInfoDisplay()
 		})
 
-		let currentInfoIndex = 0
+
+		/* =================== ANIMATIONS =================== */
+
 		function changeInfoDisplay(playAnimation = true) {
+			const currentInfo = infoDisplays[currentInfoIndex]
+			currentInfoIndex = currentInfoIndex === infoDisplays.length - 1 ? 0 : currentInfoIndex + 1
+			const nextInfo = infoDisplays[currentInfoIndex]
+
 			if (playAnimation) {
-				// doPlayAnimation()
-				// This may need a timeout to not block info change
+				document.querySelector('.widget-right-animations').style.visibility = 'visible'
+				document.getElementById('widget-right-transition-text').innerText = nextInfo.charAt(0).toUpperCase() + nextInfo.slice(1)
+				transitionTimeline.finished.then(() => {
+					document.querySelector('.widget-right-animations').style.visiblity = 'hidden'
+				})
+				transitionTimeline.play()
 			}
 
-			document.getElementById(`widget-timer-${infoDisplays[currentInfoIndex]}`).classList.add('hidden')
-			currentInfoIndex = currentInfoIndex === infoDisplays.length - 1 ? 0 : currentInfoIndex + 1
-			document.getElementById(`widget-timer-${infoDisplays[currentInfoIndex]}`).classList.remove('hidden')
+			setTimeout(() => {
+				document.getElementById(`widget-timer-${currentInfo}`).classList.add('hidden')
+				document.getElementById(`widget-timer-${nextInfo}`).classList.remove('hidden')
+			}, safeTransitionFrame)
 		}
+
+		function createTransitionTimeline() {
+			const fullWidth = anime.get(document.querySelector('.widget-right-animations'), 'width')
+			const easeOut = 'easeOutCubic'
+			const easeIn = 'easeInCubic'
+
+			const tl = anime.timeline({
+				easing: easeOut,
+				autoplay: false
+			})
+
+			const smallBoxAnim = {
+				targets: '.widget-right-animations .transition-box-small',
+				translateX: [
+					{ value: fullWidth, duration: 500 },
+					{ value: 0, duration: 0 },
+					{ value: fullWidth, duration: 500, delay: 1850, easing: easeIn }
+				]
+			}
+
+			const largeBoxAnim = {
+				targets: '.widget-right-animations .transition-box-large',
+				width: [
+					{ value: '100%', duration: 500 },
+					{ value: 0, duration: 500, delay: 1500, easing: easeIn },
+				],
+				translateX: [
+					{ value: fullWidth, duration: 500, delay: 2000, easing: easeIn }
+				]
+			}
+
+			const textAnim = {
+				targets: '#widget-right-transition-text',
+				translateX: [
+					{ value: ['-200%', 0], duration: 333 },
+					{ value: 20, duration: 1500, easing: 'linear' },
+					{ value: '200%', duration: 333, easing: easeIn }
+				]
+			}
+
+			tl.add(smallBoxAnim).add(largeBoxAnim, 133).add(textAnim, 300)
+
+			return tl
+		}
+
+		fitty('.shrink-fit > p', {
+			minSize: 12,
+			maxSize: 56
+		})
 	</script>
 </body>
 </html>

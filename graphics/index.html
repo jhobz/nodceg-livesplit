@@ -136,7 +136,7 @@
 		.widget-inner-circle {
 			position: absolute;
 			left: 50%;
-			transform: translate(-50%, 0);
+			transform: translateX(-50%);
 			width: var(--circle-logo-inner-diameter);
 			height: var(--circle-logo-inner-diameter);
 			background-color: var(--color-secondary);
@@ -369,7 +369,6 @@
 	<br />
 	<br />
 	<p id="connection-status"></p>
-
 	<script>
 		/* =================== VARIABLES =================== */
 
@@ -507,9 +506,12 @@
 
 			const tl = anime.timeline({
 				easing: easeOut,
-				autoplay: false
+				autoplay: false,
 			})
 
+			const circAnim = logoExit()
+
+			// We set this in the CSS class, but the animation will override it if we don't set it inline
 			anime.set('.widget-left-animations .transition-arc', {
 				skewX: -15
 			})
@@ -544,9 +546,122 @@
 			// }
 
 			// tl.add(smallBoxAnim).add(largeBoxAnim, 133).add(textAnim, 300)
-			tl.add(arcAnim)
+			tl.add(circAnim).add(arcAnim)
 
 			return tl
+		}
+
+		function logoExit() {
+			// We set this in the CSS classes, but the animation will override it if we don't set it inline
+			anime.set('.widget-inner-circle', {
+				translateX: '-50%'
+			})
+
+			return {
+				targets: '.widget-inner-circle',
+				scale: [
+					{ value: 1, duration: 4000 },
+					{ value: 1.5, duration: 1000, easing: 'easeInQuad' },
+					{ value: 0, duration: 1000, easing: 'easeInElastic' }
+				],
+				rotate: [
+					{ value: 1080 * 3, duration: 4000, easing: 'easeInExpo' },
+					{ value: 1080 * 8, duration: 1000, easing: 'linear' },
+					{ value: 1080 * 16, duration: 1000, easing: 'linear' }
+				],
+				translateX: [
+					{ value: '-50%', duration: 4000 },
+					{ value: anime.random(-51, -49) + '%', duration: 50 },
+					{ value: anime.random(-51, -49) + '%', duration: 50 },
+					{ value: anime.random(-51, -49) + '%', duration: 50 },
+					{ value: anime.random(-51, -49) + '%', duration: 50 },
+					{ value: anime.random(-51, -49) + '%', duration: 50 },
+					{ value: anime.random(-51, -49) + '%', duration: 50 },
+					{ value: anime.random(-51, -49) + '%', duration: 50 },
+					{ value: anime.random(-51, -49) + '%', duration: 50 },
+					{ value: anime.random(-51, -49) + '%', duration: 50 },
+					{ value: anime.random(-51, -49) + '%', duration: 50 },
+					{ value: anime.random(-52, -48) + '%', duration: 50 },
+					{ value: anime.random(-52, -48) + '%', duration: 50 },
+					{ value: anime.random(-52, -48) + '%', duration: 50 },
+					{ value: anime.random(-52, -48) + '%', duration: 50 },
+					{ value: anime.random(-52, -48) + '%', duration: 50 },
+					{ value: anime.random(-52, -48) + '%', duration: 50 },
+					{ value: anime.random(-52, -48) + '%', duration: 50 },
+					{ value: anime.random(-52, -48) + '%', duration: 50 },
+					{ value: anime.random(-52, -48) + '%', duration: 50 },
+					{ value: anime.random(-52, -48) + '%', duration: 50 },
+					{ value: anime.random(-53, -47) + '%', duration: 50 },
+					{ value: anime.random(-53, -47) + '%', duration: 50 },
+					{ value: anime.random(-53, -47) + '%', duration: 50 },
+					{ value: anime.random(-53, -47) + '%', duration: 50 },
+					{ value: anime.random(-53, -47) + '%', duration: 50 },
+					{ value: anime.random(-53, -47) + '%', duration: 50 },
+					{ value: anime.random(-53, -47) + '%', duration: 50 },
+					{ value: anime.random(-53, -47) + '%', duration: 50 },
+					{ value: anime.random(-53, -47) + '%', duration: 50 },
+					{ value: anime.random(-53, -47) + '%', duration: 50 },
+					{ value: anime.random(-55, -45) + '%', duration: 50 },
+					{ value: anime.random(-55, -45) + '%', duration: 50 },
+					{ value: anime.random(-55, -45) + '%', duration: 50 },
+					{ value: anime.random(-55, -45) + '%', duration: 50 },
+					{ value: anime.random(-55, -45) + '%', duration: 50 },
+					{ value: anime.random(-55, -45) + '%', duration: 50 },
+					{ value: anime.random(-55, -45) + '%', duration: 50 },
+					{ value: anime.random(-55, -45) + '%', duration: 50 },
+					{ value: anime.random(-55, -45) + '%', duration: 50 },
+					{ value: anime.random(-55, -45) + '%', duration: 50 },
+					{ value: '-50%', duration: 0 }
+				],
+				translateY: [
+					{ value: 0, duration: 4000 },
+					{ value: anime.random(-1, 1) + '%', duration: 50 },
+					{ value: anime.random(-1, 1) + '%', duration: 50 },
+					{ value: anime.random(-1, 1) + '%', duration: 50 },
+					{ value: anime.random(-1, 1) + '%', duration: 50 },
+					{ value: anime.random(-1, 1) + '%', duration: 50 },
+					{ value: anime.random(-1, 1) + '%', duration: 50 },
+					{ value: anime.random(-1, 1) + '%', duration: 50 },
+					{ value: anime.random(-1, 1) + '%', duration: 50 },
+					{ value: anime.random(-1, 1) + '%', duration: 50 },
+					{ value: anime.random(-1, 1) + '%', duration: 50 },
+					{ value: anime.random(-2, 2) + '%', duration: 50 },
+					{ value: anime.random(-2, 2) + '%', duration: 50 },
+					{ value: anime.random(-2, 2) + '%', duration: 50 },
+					{ value: anime.random(-2, 2) + '%', duration: 50 },
+					{ value: anime.random(-2, 2) + '%', duration: 50 },
+					{ value: anime.random(-2, 2) + '%', duration: 50 },
+					{ value: anime.random(-2, 2) + '%', duration: 50 },
+					{ value: anime.random(-2, 2) + '%', duration: 50 },
+					{ value: anime.random(-2, 2) + '%', duration: 50 },
+					{ value: anime.random(-2, 2) + '%', duration: 50 },
+					{ value: anime.random(-3, 3) + '%', duration: 50 },
+					{ value: anime.random(-3, 3) + '%', duration: 50 },
+					{ value: anime.random(-3, 3) + '%', duration: 50 },
+					{ value: anime.random(-3, 3) + '%', duration: 50 },
+					{ value: anime.random(-3, 3) + '%', duration: 50 },
+					{ value: anime.random(-3, 3) + '%', duration: 50 },
+					{ value: anime.random(-3, 3) + '%', duration: 50 },
+					{ value: anime.random(-3, 3) + '%', duration: 50 },
+					{ value: anime.random(-3, 3) + '%', duration: 50 },
+					{ value: anime.random(-3, 3) + '%', duration: 50 },
+					{ value: anime.random(-5, 5) + '%', duration: 50 },
+					{ value: anime.random(-5, 5) + '%', duration: 50 },
+					{ value: anime.random(-5, 5) + '%', duration: 50 },
+					{ value: anime.random(-5, 5) + '%', duration: 50 },
+					{ value: anime.random(-5, 5) + '%', duration: 50 },
+					{ value: anime.random(-5, 5) + '%', duration: 50 },
+					{ value: anime.random(-5, 5) + '%', duration: 50 },
+					{ value: anime.random(-5, 5) + '%', duration: 50 },
+					{ value: anime.random(-5, 5) + '%', duration: 50 },
+					{ value: anime.random(-5, 5) + '%', duration: 50 },
+					{ value: 0, duration: 0 }
+				],
+				borderColor: [
+					{ value: '#f9f9f9', duration: 3000, delay: 1000, easing: 'easeInExpo' },
+					{ value: '#ffc400', duration: 1000, delay: 750, easing: 'easeInExpo' }
+				]
+			}
 		}
 
 		fitty('.shrink-fit > p', {

@@ -140,6 +140,7 @@
 			width: var(--circle-logo-inner-diameter);
 			height: var(--circle-logo-inner-diameter);
 			background-color: var(--color-secondary);
+			background-image: url("/assets/livesplit/logos/logo_inverted_160x81.png");
 			background-position: center;
 			background-size: contain;
 			background-repeat: no-repeat;
@@ -370,7 +371,7 @@
 	<br />
 	<p id="connection-status"></p>
 	<script>
-		/* =================== VARIABLES =================== */
+		/* =================== VARIABLES & SETUP =================== */
 
 		const rLivesplit = nodecg.Replicant('livesplit')
 		const rLogos = nodecg.Replicant('assets:logos')
@@ -378,14 +379,18 @@
 		const animations = [{
 			tl: createTransitionTimeline(),
 			duration: 2850,
-			safeTime: this.duration / 2
-		 }, {
+			safeTime: 2850 / 2
+		}, {
 			tl: createGoldSplitTimeline(),
 			duration: 1000
-		 }]
+		}]
 
 		let currentInfoIndex = 0
 
+		fitty('.shrink-fit > p', {
+			minSize: 12,
+			maxSize: 56
+		})
 
 		/* =================== REPLICANTS =================== */
 
@@ -417,9 +422,9 @@
 			}
 		})
 
-		rLogos.on('change', (newValue, oldValue) => {
-			document.querySelector('.widget-inner-circle').style.backgroundImage = `url('${newValue[0].url}')`
-		})
+		// rLogos.on('change', (newValue, oldValue) => {
+		// 	document.querySelector('.widget-inner-circle').style.backgroundImage = `url('${newValue[0].url}')`
+		// })
 
 
 		/* =================== MESSAGES =================== */
@@ -552,6 +557,8 @@
 		}
 
 		function logoExit() {
+			addMotionBlur('.widget-inner-circle')
+
 			// We set this in the CSS classes, but the animation will override it if we don't set it inline
 			anime.set('.widget-inner-circle', {
 				translateX: '-50%'
@@ -559,15 +566,14 @@
 
 			return {
 				targets: '.widget-inner-circle',
+				// delay: anime.stagger(10),
 				scale: [
 					{ value: 1, duration: 4000 },
 					{ value: 1.5, duration: 1000, easing: 'easeInQuad' },
 					{ value: 0, duration: 1000, easing: 'easeInElastic' }
 				],
 				rotate: [
-					{ value: 1080 * 3, duration: 4000, easing: 'easeInExpo' },
-					{ value: 1080 * 8, duration: 1000, easing: 'linear' },
-					{ value: 1080 * 16, duration: 1000, easing: 'linear' }
+					{ value: 1080 * 27, duration: 6000, easing: 'easeInExpo', delay: anime.stagger(10) },
 				],
 				translateX: [
 					{ value: '-50%', duration: 4000 },
@@ -596,22 +602,23 @@
 					{ value: anime.random(-53, -47) + '%', duration: 50 },
 					{ value: anime.random(-53, -47) + '%', duration: 50 },
 					{ value: anime.random(-53, -47) + '%', duration: 50 },
-					{ value: anime.random(-53, -47) + '%', duration: 50 },
-					{ value: anime.random(-53, -47) + '%', duration: 50 },
-					{ value: anime.random(-53, -47) + '%', duration: 50 },
-					{ value: anime.random(-53, -47) + '%', duration: 50 },
-					{ value: anime.random(-53, -47) + '%', duration: 50 },
-					{ value: anime.random(-55, -45) + '%', duration: 50 },
-					{ value: anime.random(-55, -45) + '%', duration: 50 },
-					{ value: anime.random(-55, -45) + '%', duration: 50 },
-					{ value: anime.random(-55, -45) + '%', duration: 50 },
-					{ value: anime.random(-55, -45) + '%', duration: 50 },
-					{ value: anime.random(-55, -45) + '%', duration: 50 },
-					{ value: anime.random(-55, -45) + '%', duration: 50 },
-					{ value: anime.random(-55, -45) + '%', duration: 50 },
-					{ value: anime.random(-55, -45) + '%', duration: 50 },
-					{ value: anime.random(-55, -45) + '%', duration: 50 },
-					{ value: '-50%', duration: 0 }
+					// { value: anime.random(-53, -47) + '%', duration: 50 },
+					// { value: anime.random(-53, -47) + '%', duration: 50 },
+					// { value: anime.random(-53, -47) + '%', duration: 50 },
+					// { value: anime.random(-53, -47) + '%', duration: 50 },
+					// { value: anime.random(-53, -47) + '%', duration: 50 },
+					// { value: anime.random(-55, -45) + '%', duration: 50 },
+					// { value: anime.random(-55, -45) + '%', duration: 50 },
+					// { value: anime.random(-55, -45) + '%', duration: 50 },
+					// { value: anime.random(-55, -45) + '%', duration: 50 },
+					// { value: anime.random(-55, -45) + '%', duration: 50 },
+					// { value: anime.random(-55, -45) + '%', duration: 50 },
+					// { value: anime.random(-55, -45) + '%', duration: 50 },
+					// { value: anime.random(-55, -45) + '%', duration: 50 },
+					// { value: anime.random(-55, -45) + '%', duration: 50 },
+					// { value: anime.random(-55, -45) + '%', duration: 50 },
+					{ value: '-50%', duration: 50 },
+					{ value: '-50%', duration: 700 }
 				],
 				translateY: [
 					{ value: 0, duration: 4000 },
@@ -640,34 +647,43 @@
 					{ value: anime.random(-3, 3) + '%', duration: 50 },
 					{ value: anime.random(-3, 3) + '%', duration: 50 },
 					{ value: anime.random(-3, 3) + '%', duration: 50 },
-					{ value: anime.random(-3, 3) + '%', duration: 50 },
-					{ value: anime.random(-3, 3) + '%', duration: 50 },
-					{ value: anime.random(-3, 3) + '%', duration: 50 },
-					{ value: anime.random(-3, 3) + '%', duration: 50 },
-					{ value: anime.random(-3, 3) + '%', duration: 50 },
-					{ value: anime.random(-5, 5) + '%', duration: 50 },
-					{ value: anime.random(-5, 5) + '%', duration: 50 },
-					{ value: anime.random(-5, 5) + '%', duration: 50 },
-					{ value: anime.random(-5, 5) + '%', duration: 50 },
-					{ value: anime.random(-5, 5) + '%', duration: 50 },
-					{ value: anime.random(-5, 5) + '%', duration: 50 },
-					{ value: anime.random(-5, 5) + '%', duration: 50 },
-					{ value: anime.random(-5, 5) + '%', duration: 50 },
-					{ value: anime.random(-5, 5) + '%', duration: 50 },
-					{ value: anime.random(-5, 5) + '%', duration: 50 },
-					{ value: 0, duration: 0 }
+					// { value: anime.random(-3, 3) + '%', duration: 50 },
+					// { value: anime.random(-3, 3) + '%', duration: 50 },
+					// { value: anime.random(-3, 3) + '%', duration: 50 },
+					// { value: anime.random(-3, 3) + '%', duration: 50 },
+					// { value: anime.random(-3, 3) + '%', duration: 50 },
+					// { value: anime.random(-5, 5) + '%', duration: 50 },
+					// { value: anime.random(-5, 5) + '%', duration: 50 },
+					// { value: anime.random(-5, 5) + '%', duration: 50 },
+					// { value: anime.random(-5, 5) + '%', duration: 50 },
+					// { value: anime.random(-5, 5) + '%', duration: 50 },
+					// { value: anime.random(-5, 5) + '%', duration: 50 },
+					// { value: anime.random(-5, 5) + '%', duration: 50 },
+					// { value: anime.random(-5, 5) + '%', duration: 50 },
+					// { value: anime.random(-5, 5) + '%', duration: 50 },
+					// { value: anime.random(-5, 5) + '%', duration: 50 },
+					{ value: 0, duration: 50 },
+					{ value: 0, duration: 700 }
 				],
 				borderColor: [
 					{ value: '#f9f9f9', duration: 3000, delay: 1000, easing: 'easeInExpo' },
 					{ value: '#ffc400', duration: 1000, delay: 750, easing: 'easeInExpo' }
-				]
+				],
+				backgroundColor: { value: '#ffc400', duration: 1000, delay: 5000, easing: 'easeInExpo' }
 			}
 		}
 
-		fitty('.shrink-fit > p', {
-			minSize: 12,
-			maxSize: 56
-		})
+		// Creates duplicate elements to simulate motion blur
+		function addMotionBlur(selector, steps = 10) {
+			const elem = document.querySelector(selector)
+			const parent = elem.parentNode
+			for (let i = 0; i < steps - 1; i++) {
+				const dupe = elem.cloneNode()
+				dupe.style.opacity = 1 - 1/steps - i/steps
+				dupe.style.boxShadow = 'none'
+				parent.appendChild(dupe)
+			}
+		}
 	</script>
 </body>
 </html>

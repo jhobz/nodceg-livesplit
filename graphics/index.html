@@ -18,6 +18,12 @@
 
 			--circle-logo-inner-diameter: 70px;
 			--circle-logo-outer-diameter: calc(70px + 2pt);
+
+			/* animations */
+			--color-animation-info-transition-bg: var(--color-white);
+			--color-animation-info-transition-text: var(--color-black);
+			--color-animation-gold-split-bg: var(--color-accent);
+			--color-animation-gold-split-text: var(--color-black);
 		}
 
 		/* css reset */
@@ -235,6 +241,8 @@
 
 		/* animations */
 		.animation-container {
+			display: flex;
+			justify-content: flex-start;
 			position: absolute;
 			width: calc(105% + (var(--circle-logo-outer-diameter) / 2)); /* 105% because 100 + half of skew triangle width */
 			height: 100%;
@@ -249,15 +257,32 @@
 		.widget-inner-left .animation-container {
 			right: calc(-1 * var(--circle-logo-outer-diameter) / 2);
 			transform: skewX(15deg);
+			flex-direction: row-reverse;
+
+			/* TEMPORARY */
+			visibility: visible;
 		}
 
 		.transition-box {
 			display: flex;
 			position: absolute;
 			height: 100%;
-			background-color: var(--color-accent);
+			background-color: var(--color-animation-info-transition-bg);
 			justify-content: center;
 			align-items: center;
+		}
+
+		.transition-arc {
+			width: var(--circle-logo-inner-diameter);
+			height: var(--circle-logo-inner-diameter);
+			background-color: transparent;
+			border-radius: 50%;
+			border: 5px solid transparent;
+			border-left-color: var(--color-accent);
+			transform: skewX(-15deg);
+			right: -50px;
+			align-self: center;
+			justify-self: flex-end;
 		}
 
 		.transition-box-small {
@@ -270,7 +295,6 @@
 		}
 
 		.widget-inner-left .transition-box {
-			right: 0;
 			transform-origin: right center;
 		}
 
@@ -280,7 +304,7 @@
 		}
 
 		.transition-box-text {
-			color: var(--color-black);
+			color: var(--color-animation-info-transition-text);
 			font-size: 36pt;
 			font-weight: 500;
 			font-variant: small-caps;
@@ -293,12 +317,13 @@
 			<div class="widget-upper">
 				<div class="widget-inner-left">
 					<div class="widget-left-animations animation-container">
+						<div class="transition-box transition-arc"></div>
 						<div class="transition-box transition-box-small"></div>
 						<div class="transition-box transition-box-large">
 						</div>
 						<div class="text">
 							<div class="shrink-fit">
-								<p class="transition-box-text" id="widget-left-transition-text">WORDS</p>
+								<p class="transition-box-text" id="widget-left-transition-text"></p>
 							</div>
 						</div>
 					</div>
@@ -312,7 +337,7 @@
 						<div class="transition-box transition-box-large"></div>
 						<div class="text">
 							<div class="shrink-fit">
-								<p class="transition-box-text" id="widget-right-transition-text">DELTA</p>
+								<p class="transition-box-text" id="widget-right-transition-text"></p>
 							</div>
 						</div>
 					</div>
@@ -351,9 +376,14 @@
 		const rLivesplit = nodecg.Replicant('livesplit')
 		const rLogos = nodecg.Replicant('assets:logos')
 		const infoDisplays = ['delta', 'bestPossibleTime', 'finalTime']
-		const transitionTimeline = createTransitionTimeline()
-		const totalTransitionTime = 2850
-		const safeTransitionFrame = totalTransitionTime / 2
+		const animations = [{
+			tl: createTransitionTimeline(),
+			duration: 2850,
+			safeTime: this.duration / 2
+		 }, {
+			tl: createGoldSplitTimeline(),
+			duration: 1000
+		 }]
 
 		let currentInfoIndex = 0
 
@@ -403,6 +433,7 @@
 		/* =================== ANIMATIONS =================== */
 
 		function changeInfoDisplay(playAnimation = true) {
+			const animation = animations[0]
 			const currentInfo = infoDisplays[currentInfoIndex]
 			currentInfoIndex = currentInfoIndex === infoDisplays.length - 1 ? 0 : currentInfoIndex + 1
 			const nextInfo = infoDisplays[currentInfoIndex]
@@ -410,16 +441,19 @@
 			if (playAnimation) {
 				document.querySelector('.widget-right-animations').style.visibility = 'visible'
 				document.getElementById('widget-right-transition-text').innerText = nextInfo.charAt(0).toUpperCase() + nextInfo.slice(1)
-				transitionTimeline.finished.then(() => {
+				animation.tl.finished.then(() => {
 					document.querySelector('.widget-right-animations').style.visiblity = 'hidden'
 				})
-				transitionTimeline.play()
+				animation.tl.play()
+				//TEMPORARY
+				animations[1].tl.play()
+				//ENDTEMPORARY
 			}
 
 			setTimeout(() => {
 				document.getElementById(`widget-timer-${currentInfo}`).classList.add('hidden')
 				document.getElementById(`widget-timer-${nextInfo}`).classList.remove('hidden')
-			}, safeTransitionFrame)
+			}, animation.safeTime)
 		}
 
 		function createTransitionTimeline() {
@@ -462,6 +496,55 @@
 			}
 
 			tl.add(smallBoxAnim).add(largeBoxAnim, 133).add(textAnim, 300)
+
+			return tl
+		}
+
+		function createGoldSplitTimeline() {
+			const fullWidth = anime.get(document.querySelector('.widget-left-animations'), 'width')
+			const easeOut = 'easeOutCubic'
+			const easeIn = 'easeInCubic'
+
+			const tl = anime.timeline({
+				easing: easeOut,
+				autoplay: false
+			})
+
+			anime.set('.widget-left-animations .transition-arc', {
+				skewX: -15
+			})
+
+			const arcAnim = {
+				targets: '.widget-left-animations .transition-arc',
+				translateX: [
+					{ value: [0, '-' + fullWidth], duration: 500 },
+					{ value: 0, duration: 0 },
+					{ value: '-' + fullWidth, duration: 500, delay: 1850, easing: easeIn }
+				]
+			}
+
+			// const largeBoxAnim = {
+			// 	targets: '.widget-right-animations .transition-box-large',
+			// 	width: [
+			// 		{ value: '100%', duration: 500 },
+			// 		{ value: 0, duration: 500, delay: 1500, easing: easeIn },
+			// 	],
+			// 	translateX: [
+			// 		{ value: fullWidth, duration: 500, delay: 2000, easing: easeIn }
+			// 	]
+			// }
+
+			// const textAnim = {
+			// 	targets: '#widget-right-transition-text',
+			// 	translateX: [
+			// 		{ value: ['-200%', 0], duration: 333 },
+			// 		{ value: 20, duration: 1500, easing: 'linear' },
+			// 		{ value: '200%', duration: 333, easing: easeIn }
+			// 	]
+			// }
+
+			// tl.add(smallBoxAnim).add(largeBoxAnim, 133).add(textAnim, 300)
+			tl.add(arcAnim)
 
 			return tl
 		}

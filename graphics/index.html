@@ -27,8 +27,9 @@
 			--trapezoid-ratio: 3.83%;
 
 			/* animations */
-			--color-animation-info-transition-bg: var(--color-white);
-			--color-animation-info-transition-text: var(--color-black);
+			--color-animation-info-transition-leader: var(--color-white);
+			--color-animation-info-transition-bg: var(--color-secondary);
+			--color-animation-info-transition-text: var(--color-white);
 			--color-animation-gold-split-bg: var(--color-accent);
 			--color-animation-gold-split-text: var(--color-black);
 		}
@@ -254,9 +255,6 @@
 			margin-right: calc((70px + 2pt) / -2);
 			transform: skewX(15deg);
 			flex-direction: row-reverse;
-
-			/* TEMPORARY */
-			visibility: visible;
 		}
 
 		.widget-inner-right .animation-container {
@@ -268,28 +266,45 @@
 			display: flex;
 			position: absolute;
 			height: 100%;
-			background-color: var(--color-animation-info-transition-bg);
 			justify-content: center;
 			align-items: center;
 		}
 
+		#widget-full-animations {
+			justify-content: center;
+			overflow: hidden;
+			clip-path: polygon(0 0, 100% 0, calc(100% - var(--trapezoid-ratio)) 100%, var(--trapezoid-ratio) 100%);
+			z-index: 2;
+		}
+
 		.transition-circle {
-			position: initial;
 			width: var(--circle-logo-inner-diameter);
 			height: var(--circle-logo-inner-diameter);
 			background-color: transparent;
 			border-radius: 50%;
-			border: 5px solid var(--color-accent);
+			border: 5px solid var(--color-animation-gold-split-bg);
 			margin: auto;
+		}
+
+		.transition-circle-full {
+			width: var(--circle-logo-inner-diameter);
+			height: var(--circle-logo-inner-diameter);
+			background-color: var(--color-animation-gold-split-bg);
+			border-radius: 50%;
 		}
 
 		.transition-box-small {
 			width: 15px;
+			background-color: var(--color-animation-info-transition-leader);
 		}
 
 		.transition-box-large {
-			width: 0;
-			overflow: hidden;
+			width: 100%;
+			background-color: var(--color-animation-info-transition-bg);
+			border: 5px solid var(--color-animation-info-transition-leader);
+			border-top: none;
+			border-bottom: none;
+			box-sizing: border-box;
 		}
 
 		.widget-inner-left .transition-box {
@@ -297,15 +312,19 @@
 		}
 
 		.widget-inner-right .transition-box {
-			left: 0; /* technically unnecessary, but kept in order to be clear that this is the animated property */
 			transform-origin: left center;
 		}
 
 		.transition-box-text {
 			color: var(--color-animation-info-transition-text);
-			font-size: 36pt;
 			font-weight: 500;
 			font-variant: small-caps;
+		}
+
+		.transition-box-text-gold {
+			color: var(--color-animation-gold-split-text);
+			font-weight: 500;
+			text-transform: uppercase;
 		}
 	</style>
 </head>
@@ -313,8 +332,16 @@
 	<div class="widget-container">
 		<div class="widget-upper-border">
 			<div class="widget-upper">
-				<div class="widget-full-animations animation-container">
+				<div id="widget-full-animations" class="animation-container">
 					<div class="transition-box transition-circle"></div>
+					<div class="transition-box transition-circle"></div>
+					<div class="transition-box transition-circle"></div>
+					<div class="transition-box transition-circle-full"></div>
+					<div class="text">
+						<div class="shrink-fit">
+							<p class="transition-box-text-gold" id="widget-full-transition-text">GOLD SPLIT!</p>
+						</div>
+					</div>
 				</div>
 				<div class="widget-inner-left">
 					<div class="widget-left-animations animation-container">
@@ -369,6 +396,7 @@
 	<br />
 	<br />
 	<p id="connection-status"></p>
+	<button id="btn-temp-gold-anim">Gold split</button>
 	<script>
 		/* =================== VARIABLES & SETUP =================== */
 
@@ -429,11 +457,23 @@
 		/* =================== MESSAGES =================== */
 
 		nodecg.listenFor('changeInfoDisplay', (_, ack) => {
-			changeInfoDisplay()
+			changeInfoDisplay(false)
 		})
 
 
 		/* =================== ANIMATIONS =================== */
+
+		// on a button for now, but will be wired up to gold splits later
+		const btn = document.getElementById('btn-temp-gold-anim')
+		btn.onclick = ev => {
+			const animation = animations[1]
+			document.querySelector('#widget-full-animations').style.visibility = 'visible'
+			animation.tl.finished.then(() => {
+				document.querySelector('#widget-full-animations').style.visibility = 'hidden'
+			})
+
+			animation.tl.play()
+		}
 
 		function changeInfoDisplay(playAnimation = true) {
 			const animation = animations[0]
@@ -448,9 +488,6 @@
 					document.querySelector('.widget-right-animations').style.visiblity = 'hidden'
 				})
 				animation.tl.play()
-				//TEMPORARY
-				animations[1].tl.play()
-				//ENDTEMPORARY
 			}
 
 			setTimeout(() => {
@@ -481,7 +518,7 @@
 			const largeBoxAnim = {
 				targets: '.widget-right-animations .transition-box-large',
 				width: [
-					{ value: '100%', duration: 500 },
+					{ value: [0, '100%'], duration: 500 },
 					{ value: 0, duration: 500, delay: 1500, easing: easeIn },
 				],
 				translateX: [
@@ -504,53 +541,59 @@
 		}
 
 		function createGoldSplitTimeline() {
-			const fullWidth = anime.get(document.querySelector('.widget-left-animations'), 'width')
 			const easeOut = 'easeOutCubic'
 			const easeIn = 'easeInCubic'
 
 			const tl = anime.timeline({
 				easing: easeOut,
 				autoplay: false,
+				duration: 300
 			})
 
-			const circAnim = logoExit()
-
-			// We set this in the CSS class, but the animation will override it if we don't set it inline
-			anime.set('.widget-left-animations .transition-arc', {
-				skewX: -15
-			})
-
-			const arcAnim = {
-				targets: '.widget-left-animations .transition-arc',
-				translateX: [
-					{ value: [0, '-' + fullWidth], duration: 500 },
-					{ value: 0, duration: 0 },
-					{ value: '-' + fullWidth, duration: 500, delay: 1850, easing: easeIn }
-				]
+			const logoOut = logoExit()
+			const logoIn = {
+				targets: '.widget-inner-circle',
+				scale: 1,
+				duration: 500,
+				easing: 'easeOutElastic'
 			}
 
-			// const largeBoxAnim = {
-			// 	targets: '.widget-right-animations .transition-box-large',
-			// 	width: [
-			// 		{ value: '100%', duration: 500 },
-			// 		{ value: 0, duration: 500, delay: 1500, easing: easeIn },
-			// 	],
-			// 	translateX: [
-			// 		{ value: fullWidth, duration: 500, delay: 2000, easing: easeIn }
-			// 	]
-			// }
+			const pulse = {
+				targets: '#widget-full-animations .transition-circle',
+				scale: [0, 6],
+				opacity: 0,
+				delay: anime.stagger(200, { easing: 'easeOutQuad' })
+			}
 
-			// const textAnim = {
-			// 	targets: '#widget-right-transition-text',
-			// 	translateX: [
-			// 		{ value: ['-200%', 0], duration: 333 },
-			// 		{ value: 20, duration: 1500, easing: 'linear' },
-			// 		{ value: '200%', duration: 333, easing: easeIn }
-			// 	]
-			// }
+			const fillBoxIn = {
+				targets: '#widget-full-animations .transition-circle-full',
+				scale: [0, 6]
+			}
 
-			// tl.add(smallBoxAnim).add(largeBoxAnim, 133).add(textAnim, 300)
-			tl.add(circAnim).add(arcAnim)
+			const textIn = {
+				targets: '#widget-full-animations .text',
+				scale: [
+					{ value: 0, duration: 0 },
+					{ value: 0.9, duration: 300 },
+					{ value: 1, duration: 5000, easing: 'linear' }
+				],
+				opacity: [0, 1]
+			}
+
+			const textAndFillBoxOut = {
+				targets: ['#widget-full-animations .text', '#widget-full-animations .transition-circle-full'],
+				scale: 1.5,
+				opacity: 0,
+				duration: 1000,
+				delay: anime.stagger(500)
+			}
+
+			tl.add(logoOut)
+			  .add(pulse, '-=500')
+			  .add(fillBoxIn, '-=250')
+			  .add(textIn, '-=100')
+			  .add(textAndFillBoxOut)
+			  .add(logoIn, '-=300')
 
 			return tl
 		}
@@ -601,21 +644,6 @@
 					{ value: anime.random(-53, -47) + '%', duration: 50 },
 					{ value: anime.random(-53, -47) + '%', duration: 50 },
 					{ value: anime.random(-53, -47) + '%', duration: 50 },
-					// { value: anime.random(-53, -47) + '%', duration: 50 },
-					// { value: anime.random(-53, -47) + '%', duration: 50 },
-					// { value: anime.random(-53, -47) + '%', duration: 50 },
-					// { value: anime.random(-53, -47) + '%', duration: 50 },
-					// { value: anime.random(-53, -47) + '%', duration: 50 },
-					// { value: anime.random(-55, -45) + '%', duration: 50 },
-					// { value: anime.random(-55, -45) + '%', duration: 50 },
-					// { value: anime.random(-55, -45) + '%', duration: 50 },
-					// { value: anime.random(-55, -45) + '%', duration: 50 },
-					// { value: anime.random(-55, -45) + '%', duration: 50 },
-					// { value: anime.random(-55, -45) + '%', duration: 50 },
-					// { value: anime.random(-55, -45) + '%', duration: 50 },
-					// { value: anime.random(-55, -45) + '%', duration: 50 },
-					// { value: anime.random(-55, -45) + '%', duration: 50 },
-					// { value: anime.random(-55, -45) + '%', duration: 50 },
 					{ value: '-50%', duration: 50 },
 					{ value: '-50%', duration: 700 }
 				],
@@ -646,29 +674,18 @@
 					{ value: anime.random(-3, 3) + '%', duration: 50 },
 					{ value: anime.random(-3, 3) + '%', duration: 50 },
 					{ value: anime.random(-3, 3) + '%', duration: 50 },
-					// { value: anime.random(-3, 3) + '%', duration: 50 },
-					// { value: anime.random(-3, 3) + '%', duration: 50 },
-					// { value: anime.random(-3, 3) + '%', duration: 50 },
-					// { value: anime.random(-3, 3) + '%', duration: 50 },
-					// { value: anime.random(-3, 3) + '%', duration: 50 },
-					// { value: anime.random(-5, 5) + '%', duration: 50 },
-					// { value: anime.random(-5, 5) + '%', duration: 50 },
-					// { value: anime.random(-5, 5) + '%', duration: 50 },
-					// { value: anime.random(-5, 5) + '%', duration: 50 },
-					// { value: anime.random(-5, 5) + '%', duration: 50 },
-					// { value: anime.random(-5, 5) + '%', duration: 50 },
-					// { value: anime.random(-5, 5) + '%', duration: 50 },
-					// { value: anime.random(-5, 5) + '%', duration: 50 },
-					// { value: anime.random(-5, 5) + '%', duration: 50 },
-					// { value: anime.random(-5, 5) + '%', duration: 50 },
 					{ value: 0, duration: 50 },
 					{ value: 0, duration: 700 }
 				],
 				borderColor: [
 					{ value: '#f9f9f9', duration: 3000, delay: 1000, easing: 'easeInExpo' },
-					{ value: '#ffc400', duration: 1000, delay: 750, easing: 'easeInExpo' }
+					{ value: '#ffc400', duration: 1000, delay: 750, easing: 'easeInExpo' },
+					{ value: '#1a1a1a', delay: 250 },
 				],
-				backgroundColor: { value: '#ffc400', duration: 1000, delay: 5000, easing: 'easeInExpo' }
+				backgroundColor: [
+					{ value: '#ffc400', duration: 1000, delay: 5000, easing: 'easeInExpo' },
+					{ value: '#15315d' }
+				]
 			}
 		}
 

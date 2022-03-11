@@ -4,6 +4,7 @@ const LiveSplitClient = require('livesplit-client')
 module.exports = nodecg => {
 	const rLivesplit = nodecg.Replicant('livesplit')
 	const client = new LiveSplitClient(`${nodecg.bundleConfig.url}:${nodecg.bundleConfig.port}`)
+	const pollingInterval = 15
 	const infoDisplayChangeInterval = 4000
 	let timerHandle, infoDisplayChangeHandle
 
@@ -20,7 +21,7 @@ module.exports = nodecg => {
 			} catch (err) {
 				nodecg.log.error(err)
 			}
-		}, 150)
+		}, pollingInterval)
 	})
 
 	client.on('disconnected', () => {

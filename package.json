@@ -53,6 +53,6 @@
   "dependencies": {
     "animejs": "^3.2.1",
     "fitty": "^2.3.6",
-    "livesplit-client": "satanch/node-livesplit-client#df280d726f5fc9cf5690c91f44a24a466e5f1a25"
+    "livesplit-client": "../../../node-livesplit-client"
   }
 }

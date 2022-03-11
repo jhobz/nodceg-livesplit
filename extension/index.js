@@ -12,6 +12,7 @@ module.exports = nodecg => {
 	rLivesplit.value.connection.status = 'disconnected'
 	rLivesplit.value.timer = undefined
 
+	client.timeout = pollingInterval * 2
 	client.on('connected', () => {
 		nodecg.log.info('Connected to ls')
 		rLivesplit.value.connection.status = 'connected'

@@ -16,13 +16,7 @@ module.exports = nodecg => {
 	client.on('connected', () => {
 		nodecg.log.info('Connected to ls')
 		rLivesplit.value.connection.status = 'connected'
-		timerHandle = setInterval(async () => {
-			try {
-				rLivesplit.value.timer = await client.getAll()
-			} catch (err) {
-				nodecg.log.error(err)
-			}
-		}, pollingInterval)
+		timerHandle = setInterval(updateTimer, pollingInterval)
 	})
 
 	client.on('disconnected', () => {
@@ -75,6 +69,87 @@ module.exports = nodecg => {
 	infoDisplayChangeHandle = setInterval(() => {
 		nodecg.sendMessage('changeInfoDisplay')
 	}, infoDisplayChangeInterval)
+
+	async function updateTimer() {
+		let next
+		try {
+			next = await client.getAll()
+		} catch (err) {
+			nodecg.log.error(err)
+			return
+		}
+
+		const segmentInfo = detectSplit(rLivesplit.value.timer, next)
+
+		// "error" is somewhat of a misnomer here. Sometimes updates are handled out of order.
+		// This makes it much harder to detect splits, so we'll instead defer the update in these cases.
+		// Since we poll so frequently, the delay in information will be inperceptible anyways.
+		// This property is also used in cases where the timer is not running.
+		if (segmentInfo.error) {
+			if (!segmentInfo.skipUpdate) {
+				rLivesplit.value.timer = next
+			}
+			return
+		}
+
+		rLivesplit.value.timer = next
+
+		if (segmentInfo.isComplete) {
+			nodecg.sendMessage('split', segmentInfo)
+		} else if (segmentInfo.isUndone) {
+			nodecg.sendMessage('undoSplit', segmentInfo)
+		}
+	}
+}
+
+function detectSplit(prevTime, nextTime) {
+	const segment = {}
+	if (!prevTime ||
+		!prevTime.currentTime ||
+		!nextTime.currentTime) {
+		segment.error = true
+		return segment
+	}
+
+	// Data received out of order from server
+	if (_convertTimeToMs(prevTime.currentTime) > _convertTimeToMs(nextTime.currentTime)) {
+		segment.error = true
+		segment.skipUpdate = true
+		return segment
+	}
+
+	// Detect segment end (split key pressed, but not skip key)
+	segment.isComplete = nextTime.splitIndex > 0 && nextTime.splitIndex > prevTime.splitIndex && nextTime.previousSplitTime !== '0.00'
+
+	// For now, we're just skipping over segments that include a skipped split (i.e. multiple segments in a single "split" event).
+	// TODO: Find a better solution for this? Might require a Livesplit.Server channge
+	if (prevTime.previousSplitTime === '0.00' && prevTime.splitIndex > 0) {
+		segment.isComplete = false
+	}
+
+	if (segment.isComplete) {
+		segment.duration = _convertMsToTime(_convertTimeToMs(nextTime.previousSplitTime) - _convertTimeToMs(prevTime.previousSplitTime || '0'))
+
+		// TODO: Remove this once information is received from the server all at once.
+		// Since we poll the server for each piece of information individually, there are times where a segment could end
+		// in the middle of this polling. This means some of the information will be from the old segment, and some will
+		// be from the new one. For now, to fix this we'll just skip over the update and grab the next one in these cases.
+		if (segment.duration === '00.00') {
+			segment.error = true
+			segment.skipUpdate = true
+			return segment
+		}
+
+		segment.isGold = _convertTimeToMs(nextTime.bestPossibleTime) < _convertTimeToMs(prevTime.bestPossibleTime)
+	} else if (nextTime.splitIndex < prevTime.splitIndex) {
+		segment.isUndone = true
+	} else {
+		segment.duration = _convertMsToTime(_convertTimeToMs(nextTime.currentTime) - _convertTimeToMs(prevTime.previousSplitTime || '0'))
+	}
+
+	// Undone splits - used to cancel animations in progress
+
+	return segment
 }
 
 function _convertTimeToMs(time) {

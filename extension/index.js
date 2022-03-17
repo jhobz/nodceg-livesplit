@@ -112,14 +112,14 @@ function detectSplit(prevTime, nextTime) {
 	}
 
 	// Data received out of order from server
-	if (_convertTimeToMs(prevTime.currentTime) > _convertTimeToMs(nextTime.currentTime)) {
+	if (timeDiff(nextTime.currentTime, prevTime.currentTime) < 0) {
 		segment.error = true
 		segment.skipUpdate = true
 		return segment
 	}
 
 	// Detect segment end (split key pressed, but not skip key)
-	segment.isComplete = nextTime.splitIndex > 0 && nextTime.splitIndex > prevTime.splitIndex && nextTime.previousSplitTime !== '0.00'
+	segment.isComplete = nextTime.splitIndex > 0 && parseInt(nextTime.splitIndex) > prevTime.splitIndex && nextTime.previousSplitTime !== '0.00'
 
 	// For now, we're just skipping over segments that include a skipped split (i.e. multiple segments in a single "split" event).
 	// TODO: Find a better solution for this? Might require a Livesplit.Server channge
@@ -128,28 +128,41 @@ function detectSplit(prevTime, nextTime) {
 	}
 
 	if (segment.isComplete) {
-		segment.duration = _convertMsToTime(_convertTimeToMs(nextTime.previousSplitTime) - _convertTimeToMs(prevTime.previousSplitTime || '0'))
+		segment.duration = timeDiff(nextTime.previousSplitTime, prevTime.previousSplitTime || '0')
 
 		// TODO: Remove this once information is received from the server all at once.
 		// Since we poll the server for each piece of information individually, there are times where a segment could end
 		// in the middle of this polling. This means some of the information will be from the old segment, and some will
 		// be from the new one. For now, to fix this we'll just skip over the update and grab the next one in these cases.
-		if (segment.duration === '00.00') {
+		if (segment.duration.time === 0) {
 			segment.error = true
 			segment.skipUpdate = true
 			return segment
 		}
 
-		segment.isGold = _convertTimeToMs(nextTime.bestPossibleTime) < _convertTimeToMs(prevTime.bestPossibleTime)
-	} else if (nextTime.splitIndex < prevTime.splitIndex) {
+		segment.isGold = timeDiff(nextTime.bestPossibleTime, prevTime.bestPossibleTime) < 0
+	} else if (parseInt(nextTime.splitIndex) < prevTime.splitIndex) {
 		segment.isUndone = true
 	} else {
-		segment.duration = _convertMsToTime(_convertTimeToMs(nextTime.currentTime) - _convertTimeToMs(prevTime.previousSplitTime || '0'))
+		segment.duration = timeDiff(nextTime.currentTime, prevTime.previousSplitTime || '0')
 	}
 
 	// Undone splits - used to cancel animations in progress
 
 	return segment
+}
+
+
+// TODO: Split these utility functions into a "Time" class, potentially converting all time strings into Time objects
+//       so that the comparators can be overridden as well (via .valueOf())
+function timeSum(t1, t2) {
+	const time = _convertTimeToMs(t1) + _convertTimeToMs(t2)
+	return { time, text: _convertMsToTime(time) }
+}
+
+function timeDiff(t1, t2) {
+	const time = _convertTimeToMs(t1) - _convertTimeToMs(t2)
+	return { time, text: _convertMsToTime(time) }
 }
 
 function _convertTimeToMs(time) {

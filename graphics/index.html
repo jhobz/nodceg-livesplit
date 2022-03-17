@@ -426,10 +426,8 @@
 			document.getElementById('connection-status').textContent = `${connStatus.charAt(0).toUpperCase()}${connStatus.slice(1)} ${connStatus === 'connected' ? 'to' : 'from'} LiveSplit`
 
 			if (newValue.timer) {
-				// We're not really going to put the main timer on the widget via code - that'll be handled in OBS.
-				// But I'll leave these lines commented for now because we may put something else there.
-				// document.querySelector('#widget-timer-current .timer-main').innerText = newValue.timer.currentTime.slice(0, -2)
-				// document.querySelector('#widget-timer-current .timer-sub').innerText = newValue.timer.currentTime.slice(-2)
+				document.querySelector('#widget-timer-current .timer-main').innerText = newValue.timer.currentTime.slice(0, -2)
+				document.querySelector('#widget-timer-current .timer-sub').innerText = newValue.timer.currentTime.slice(-2)
 
 				Object.keys(newValue.timer).forEach((k, i) => {
 					if (infoDisplays.includes(k)) {
@@ -460,6 +458,13 @@
 			changeInfoDisplay(false)
 		})
 
+		nodecg.listenFor('split', (segment, ack) => {
+			console.log(segment)
+		})
+
+		nodecg.listenFor('undoSplit', (segment, ack) => {
+			console.log('I would cancel animations here', segment)
+		})
 
 		/* =================== ANIMATIONS =================== */
 

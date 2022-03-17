@@ -76,3 +76,42 @@ module.exports = nodecg => {
 		nodecg.sendMessage('changeInfoDisplay')
 	}, infoDisplayChangeInterval)
 }
+
+function _convertTimeToMs(time) {
+	if (parseInt(time.charAt(0)) === NaN) {
+		time = time.slice(1)
+	}
+
+	time = time.split(':').reverse()
+
+	if (time.length <= 0 || time.length > 3) {
+		throw new Error('convertTimeToSeconds: Unrecognized time string!')
+	}
+
+	return time.reduce((sum, next, index) => sum + next * Math.pow(60, index) * 1000, 0)
+}
+
+function _convertMsToTime(ms) {
+	const neg = ms < 0 ? '-' : ''
+	let hrs = 0, mins = 0, secs = Math.abs(Math.floor(ms / 1000))
+	ms = Math.abs((ms % 1000) / 10)
+
+	if (secs >= 60 * 60) {
+		hrs = Math.floor(secs / (60 * 60))
+		secs -= hrs * 60 * 60
+		hrs = hrs < 10 ? '0' + hrs : hrs
+	}
+	if (secs >= 60) {
+		mins = Math.floor(secs / 60)
+		secs -= mins * 60
+		mins = hrs && mins < 10 ? '0' + mins : mins
+	}
+	if (secs < 10) {
+		secs = '0' + secs
+	}
+	if (ms < 10) {
+		ms = '0' + ms
+	}
+
+	return `${neg}${hrs ? hrs + ':' : ''}${hrs || mins ? mins + ':' : ''}${secs}.${ms}`
+}

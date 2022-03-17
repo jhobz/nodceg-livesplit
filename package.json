@@ -18,6 +18,9 @@
     "",
     "nodecg-bundle"
   ],
+  "scripts": {
+    "start": "node ../../index.js"
+  },
   "nodecg": {
     "assetCategories": [
       {

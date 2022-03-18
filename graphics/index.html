@@ -458,31 +458,19 @@
 
 		/* =================== MESSAGES =================== */
 
-		nodecg.listenFor('changeInfoDisplay', (_, ack) => {
-			changeInfoDisplay(false)
+		nodecg.listenFor('changeInfoDisplay', () => {
+			changeInfoDisplay()
 		})
 
-		nodecg.listenFor('split', (segment, ack) => {
-			console.log(segment)
+		nodecg.listenFor('split', segment => {
+			onSplit(segment)
 		})
 
-		nodecg.listenFor('undoSplit', (segment, ack) => {
-			console.log('I would cancel animations here', segment)
+		nodecg.listenFor('undoSplit', segment => {
+			onUndoSplit(segment)
 		})
 
-		/* =================== ANIMATIONS =================== */
-
-		// on a button for now, but will be wired up to gold splits later
-		const btn = document.getElementById('btn-temp-gold-anim')
-		btn.onclick = ev => {
-			const animation = animations[1]
-			document.querySelector('#widget-full-animations').style.visibility = 'visible'
-			animation.tl.finished.then(() => {
-				document.querySelector('#widget-full-animations').style.visibility = 'hidden'
-			})
-
-			animation.tl.play()
-		}
+		/* =================== STATE CHANGES =================== */
 
 		function changeInfoDisplay(playAnimation = true) {
 			const animation = animations[0]
@@ -504,6 +492,32 @@
 				document.getElementById(`widget-timer-${nextInfo}`).classList.remove('hidden')
 			}, animation.safeTime)
 		}
+
+		function onSplit(segment) {
+			if (segment.isGold) {
+				// Play gold split animation
+				const animation = animations[1]
+				document.querySelector('#widget-full-animations').style.visibility = 'visible'
+				animation.tl.finished.then(() => {
+					document.querySelector('#widget-full-animations').style.visibility = 'hidden'
+				})
+				animation.tl.play()
+
+				// Add some delay for the next animation
+			}
+
+			// Display some additional info about the segment
+		}
+
+		function onUndoSplit(segment) {
+			// Cancel any animations in progress, except the info display change
+			for (let i = 1; i < animations.length; i++) {
+				animations[i].tl.restart()
+				animations[i].tl.pause()
+			}
+		}
+
+		/* =================== ANIMATIONS =================== */
 
 		function createTransitionTimeline() {
 			const fullWidth = anime.get(document.querySelector('.widget-right-animations'), 'width')

@@ -140,7 +140,7 @@ function detectSplit(prevTime, nextTime) {
 			return segment
 		}
 
-		segment.isGold = timeDiff(nextTime.bestPossibleTime, prevTime.bestPossibleTime) < 0
+		segment.isGold = timeDiff(nextTime.bestPossibleTime, prevTime.bestPossibleTime).time < 0
 	} else if (parseInt(nextTime.splitIndex) < prevTime.splitIndex) {
 		segment.isUndone = true
 	} else {

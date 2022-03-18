@@ -399,6 +399,15 @@
 	<button id="btn-temp-gold-anim">Gold split</button>
 	<script>
 		/* =================== VARIABLES & SETUP =================== */
+		const COLORS = {
+			primary: '#1976d2',
+			secondary: '#15315d',
+			accent: '#ffc400',
+			white: '#f9f9f9',
+			black: '#1a1a1a',
+			ahead: '#99ff99',
+			behind: '#ff9999'
+		}
 
 		const rLivesplit = nodecg.Replicant('livesplit')
 		const rLogos = nodecg.Replicant('assets:logos')
@@ -446,11 +455,6 @@
 				}
 			}
 		})
-
-		// rLogos.on('change', (newValue, oldValue) => {
-		// 	document.querySelector('.widget-inner-circle').style.backgroundImage = `url('${newValue[0].url}')`
-		// })
-
 
 		/* =================== MESSAGES =================== */
 
@@ -613,7 +617,6 @@
 
 			return {
 				targets: '.widget-inner-circle',
-				// delay: anime.stagger(10),
 				scale: [
 					{ value: 1, duration: 4000 },
 					{ value: 1.5, duration: 1000, easing: 'easeInQuad' },
@@ -683,13 +686,13 @@
 					{ value: 0, duration: 700 }
 				],
 				borderColor: [
-					{ value: '#f9f9f9', duration: 3000, delay: 1000, easing: 'easeInExpo' },
-					{ value: '#ffc400', duration: 1000, delay: 750, easing: 'easeInExpo' },
-					{ value: '#1a1a1a', delay: 250 },
+					{ value: COLORS.white, duration: 3000, delay: 1000, easing: 'easeInExpo' },
+					{ value: COLORS.accent, duration: 1000, delay: 750, easing: 'easeInExpo' },
+					{ value: COLORS.black, delay: 250 },
 				],
 				backgroundColor: [
-					{ value: '#ffc400', duration: 1000, delay: 5000, easing: 'easeInExpo' },
-					{ value: '#15315d' }
+					{ value: COLORS.accent, duration: 1000, delay: 5000, easing: 'easeInExpo' },
+					{ value: COLORS.secondary }
 				]
 			}
 		}

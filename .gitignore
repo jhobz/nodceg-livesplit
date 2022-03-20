@@ -3,3 +3,8 @@ coverage
 bower_components
 
 .vscode
+
+# output files
+dashboard
+extension
+graphics

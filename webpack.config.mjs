@@ -1,9 +1,12 @@
 import HtmlWebpackPlugin from 'html-webpack-plugin'
+import LiveReloadPlugin from 'webpack-livereload-plugin'
 import path from 'path'
 const __dirname = path.resolve()
 
+const isProd = process.env.NODE_ENV === 'production'
+
 const extensionConfig = {
-    mode: 'production',
+    mode: isProd ? 'production' : 'development',
     target: 'node',
     entry: './src/extension/index.js',
     devtool: 'inline-source-map',
@@ -15,7 +18,7 @@ const extensionConfig = {
 }
 
 const dashboardConfig = {
-    mode: 'development',
+    mode: isProd ? 'production' : 'development',
     entry: {
         livesplit: './src/dashboard/livesplit.js'
     },
@@ -50,7 +53,7 @@ const dashboardConfig = {
 }
 
 const graphicsConfig = {
-    mode: 'development',
+    mode: isProd ? 'production' : 'development',
     devtool: 'inline-source-map',
     entry: {
         widget: './src/graphics/widget.js'
@@ -85,5 +88,15 @@ const graphicsConfig = {
     ]
 }
 
+if (!isProd) {
+    [dashboardConfig.plugins, graphicsConfig.plugins].forEach(plugins => {
+        plugins.push(
+            new LiveReloadPlugin({
+                port: 0,
+                appendScriptTag: true,
+            })
+        );
+    })
+}
 
 export default [extensionConfig, dashboardConfig, graphicsConfig]

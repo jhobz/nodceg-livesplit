@@ -1,0 +1,321 @@
+/* variables */
+:root {
+    --color-primary: #1976d2;
+    --color-secondary: #15315d;
+    --color-accent: #ffc400;
+    --color-white: #f9f9f9;
+    --color-black: #1a1a1a;
+    --color-ahead: #99ff99;
+    --color-behind: #ff9999;
+
+    --circle-logo-inner-diameter: 70px;
+    --circle-logo-outer-diameter: calc(70px + 2pt);
+
+    /* I used math! This percentage is based on the following:
+        1. A width-to-height ratio of 7 to 1
+        2. A slant angle of 15°
+        If the width-to-height ratio changes, this will need to as well.
+        The calculation is tan(t)*h/w to get the percentage of width for the triangle. */
+    --trapezoid-ratio: 3.83%;
+
+    /* animations */
+    --color-animation-info-transition-leader: var(--color-white);
+    --color-animation-info-transition-bg: var(--color-secondary);
+    --color-animation-info-transition-text: var(--color-white);
+    --color-animation-gold-split-bg: var(--color-accent);
+    --color-animation-gold-split-text: var(--color-black);
+}
+
+/* css reset */
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    font-family: sans-serif;
+    background:rgba(37, 68, 56, 0.705);
+}
+
+.monospace {
+    font-family: monospace;
+}
+
+h2 {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.205);
+}
+
+label {
+    font-weight: bold;
+}
+
+/* widget */
+.widget-container {
+    margin: 50px 0 0 50px;
+    display: inline-block;
+}
+
+.widget-upper-border {
+    position: relative;
+    width: 420px;
+    height: 60px;
+    overflow: visible;
+    filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.75));
+}
+.widget-upper-border::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-white);
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--trapezoid-ratio)) 100%, var(--trapezoid-ratio) 100%);
+}
+
+.widget-upper {
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    top: 1pt;
+    left: 1pt;
+    width: calc(420px - 2pt);
+    height: calc(60px - 2pt);
+    color: var(--color-white);
+}
+.widget-upper::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(to right, var(--color-primary), var(--color-black), var(--color-primary));
+    clip-path: polygon(0.1% 0, 99.9% 0, calc(100% - var(--trapezoid-ratio)) 100%, var(--trapezoid-ratio) 100%);
+}
+
+.widget-inner-left,
+.widget-inner-right {
+    display: flex;
+    position: relative;
+    width: 50%;
+    height: 100%;
+    max-width: calc((100% - var(--trapezoid-ratio) - var(--circle-logo-outer-diameter)) / 2);
+    flex-grow: 0;
+    white-space: nowrap;
+}
+.widget-inner-left {
+    margin-left: calc(var(--trapezoid-ratio) / 2);
+    padding-right: calc(var(--circle-logo-outer-diameter) / 2);
+    clip-path: polygon(calc(-1 * var(--trapezoid-ratio)) 0, 100% 0, 100% 100%, var(--trapezoid-ratio) 100%);
+    flex-direction: row-reverse;
+}
+.widget-inner-right {
+    margin-right: calc(var(--trapezoid-ratio) / 2);
+    padding-left: calc(var(--circle-logo-outer-diameter) / 2);
+    clip-path: polygon(0 0, calc(100% + var(--trapezoid-ratio)) 0, calc(100% - var(--trapezoid-ratio)) 100%, 0 100%);
+}
+
+.widget-inner-left > div,
+.widget-inner-right > div {
+    margin: auto;
+}
+
+.widget-inner-circle {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--circle-logo-inner-diameter);
+    height: var(--circle-logo-inner-diameter);
+    background-color: var(--color-secondary);
+    /* webpack-ignore */
+    background-image: url("/assets/livesplit/logos/logo_inverted_160x81.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    border: 2pt solid var(--color-black);
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.75);
+}
+
+/* widget lower */
+.widget-lower-border {
+    position: relative;
+    width: 360px;
+    height: calc(30px + 2pt);
+    z-index: -1;
+    filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.75));
+    margin: -1pt auto 0;
+}
+.widget-lower-border::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-white);
+    /* I used math! These percentages are based on the following:
+        1. A width-to-height ratio of 12 to 1
+        2. A slant angle of 15° (or 85°)
+        If the width-to-height ratio changes, these will need to as well.
+        The calculation is tan(t)*h/w to get the percentage of width for point 4. */
+    clip-path: polygon(0 0, 100% 0, 97.77% 100%, 2.23% 100%);
+}
+
+.widget-lower {
+    position: absolute;
+    top: 1pt;
+    left: 1pt;
+    width: calc(360px - 2pt);
+    height: 30px;
+    color: var(--color-white);
+    text-align: center;
+    white-space: nowrap;
+    background-color: var(--color-black);
+    clip-path: polygon(0.1% 0, 99.9% 0, 97.77% 100%, 2.23% 100%);
+}
+
+/* timers */
+.timer {
+    font-family: vox-round, sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    font-size: xx-large;
+}
+
+.timer-sub {
+    font-size: 60%;
+}
+
+.timer-ahead {
+    color: var(--color-ahead);
+}
+
+.timer-behind {
+    color: var(--color-behind);
+}
+
+/* information displays */
+.text {
+    width: 100%;
+    height: 100%;
+    font-family: apotek-cond, sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    font-size: 24pt;
+    line-height: 1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* p tags within this class will have their font size automatically scaled to fit */
+.shrink-fit {
+    height: 75%;
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.shrink-fit > p {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.hidden {
+    display: none;
+}
+
+/* animations */
+.animation-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    visibility: hidden;
+}
+
+.widget-inner-left .animation-container {
+    margin-right: calc((70px + 2pt) / -2);
+    transform: skewX(15deg);
+    flex-direction: row-reverse;
+}
+
+.widget-inner-right .animation-container {
+    margin-left: calc((70px + 2pt) / -2);
+    transform: skewX(-15deg);
+}
+
+.transition-box {
+    display: flex;
+    position: absolute;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+#widget-full-animations {
+    justify-content: center;
+    overflow: hidden;
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--trapezoid-ratio)) 100%, var(--trapezoid-ratio) 100%);
+    z-index: 2;
+}
+
+.transition-circle {
+    width: var(--circle-logo-inner-diameter);
+    height: var(--circle-logo-inner-diameter);
+    background-color: transparent;
+    border-radius: 50%;
+    border: 5px solid var(--color-animation-gold-split-bg);
+    margin: auto;
+}
+
+.transition-circle-full {
+    width: var(--circle-logo-inner-diameter);
+    height: var(--circle-logo-inner-diameter);
+    background-color: var(--color-animation-gold-split-bg);
+    border-radius: 50%;
+}
+
+.transition-box-small {
+    width: 15px;
+    background-color: var(--color-animation-info-transition-leader);
+}
+
+.transition-box-large {
+    width: 100%;
+    background-color: var(--color-animation-info-transition-bg);
+    border: 5px solid var(--color-animation-info-transition-leader);
+    border-top: none;
+    border-bottom: none;
+    box-sizing: border-box;
+}
+
+.widget-inner-left .transition-box {
+    transform-origin: right center;
+}
+
+.widget-inner-right .transition-box {
+    transform-origin: left center;
+}
+
+.transition-box-text {
+    color: var(--color-animation-info-transition-text);
+    font-weight: 500;
+    font-variant: small-caps;
+}
+
+.transition-box-text-gold {
+    color: var(--color-animation-gold-split-text);
+    font-weight: 500;
+    text-transform: uppercase;
+}

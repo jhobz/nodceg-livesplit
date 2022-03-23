@@ -132,7 +132,6 @@ label {
     width: var(--circle-logo-inner-diameter);
     height: var(--circle-logo-inner-diameter);
     background-color: var(--color-secondary);
-    /* webpack-ignore */
     background-image: url("/assets/livesplit/logos/logo_inverted_160x81.png");
     background-position: center;
     background-size: contain;
@@ -189,8 +188,18 @@ label {
     font-size: xx-large;
 }
 
+.timer > span {
+    display: inline-block;
+}
+
+/* .timer-main {
+    min-width: 8ch;
+    text-align: right;
+} */
+
 .timer-sub {
     font-size: 60%;
+    width: 2.2ch;
 }
 
 .timer-ahead {

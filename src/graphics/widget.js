@@ -39,14 +39,14 @@ rLivesplit.on('change', (newValue, oldValue) => {
     document.getElementById('connection-status').textContent = `${connStatus.charAt(0).toUpperCase()}${connStatus.slice(1)} ${connStatus === 'connected' ? 'to' : 'from'} LiveSplit`
 
     if (newValue.timer) {
-        document.querySelector('#widget-timer-current .timer-main').innerText = newValue.timer.currentTime.slice(0, -2)
-        document.querySelector('#widget-timer-current .timer-sub').innerText = newValue.timer.currentTime.slice(-2)
+        document.querySelector('#widget-timer-current .timer-main').innerText = newValue.timer.currentTime.slice(0, -3)
+        document.querySelector('#widget-timer-current .timer-sub').innerText = newValue.timer.currentTime.slice(-3)
 
         Object.keys(newValue.timer).forEach((k, i) => {
             if (infoDisplays.includes(k)) {
                 const query = `#widget-timer-${k}`
-                document.querySelector(query + ' .timer-main').innerText = newValue.timer[k].slice(0, -2)
-                document.querySelector(query + ' .timer-sub').innerText = newValue.timer[k].slice(-2)
+                document.querySelector(query + ' .timer-main').innerText = newValue.timer[k].slice(0, -3)
+                document.querySelector(query + ' .timer-sub').innerText = newValue.timer[k].slice(-3)
             }
         })
 

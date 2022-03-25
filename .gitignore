@@ -5,6 +5,6 @@ bower_components
 .vscode
 
 # output files
-dashboard
-extension
-graphics
+/dashboard
+/extension
+/graphics

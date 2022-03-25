@@ -2,6 +2,34 @@ import './widget.css'
 import anime from 'animejs'
 import fitty from 'fitty'
 
+/**
+ * Animation class
+ */
+class Animation {
+    #buildTimeline
+    duration
+    safeTime
+    tl
+
+    constructor(type, duration = 500) {
+        this.duration = duration
+
+        switch(type) {
+            case 'transition':
+                this.#buildTimeline = createTransitionTimeline
+                this.safeTime = this.duration / 2
+                break;
+            case 'gold':
+                this.#buildTimeline = createGoldSplitTimeline
+                break;
+            default:
+                throw new Error('Unrecognized animation type')
+        }
+
+        this.tl = this.#buildTimeline(this.duration)
+    }
+}
+
 /* =================== VARIABLES & SETUP =================== */
 const COLORS = {
     primary: '#1976d2',
@@ -16,14 +44,10 @@ const COLORS = {
 const rLivesplit = nodecg.Replicant('livesplit')
 const rLogos = nodecg.Replicant('assets:logos')
 const infoDisplays = ['delta', 'bestPossibleTime', 'finalTime']
-const animations = [{
-    tl: createTransitionTimeline(),
-    duration: 2850,
-    safeTime: 2850 / 2
-}, {
-    tl: createGoldSplitTimeline(),
-    duration: 1000
-}]
+const animations = [
+    new Animation('transition', 2850),
+    new Animation('gold', 13325),
+]
 
 let currentInfoIndex = 0
 
@@ -99,6 +123,8 @@ function changeInfoDisplay(playAnimation = true) {
 
 function onSplit(segment) {
     if (segment.isGold) {
+        // Pause/cancel all other animations
+
         // Play gold split animation
         const animation = animations[1]
         document.querySelector('#widget-full-animations').style.visibility = 'visible'
@@ -108,6 +134,8 @@ function onSplit(segment) {
         animation.tl.play()
 
         // Add some delay for the next animation
+
+        // Resume other animations
     }
 
     // Display some additional info about the segment
@@ -326,3 +354,13 @@ function addMotionBlur(selector, steps = 10) {
         parent.appendChild(dupe)
     }
 }
+
+
+
+// DEBUG GARBAGE
+document.getElementById('tlPlay').addEventListener('click', (ev) => {
+    animations.forEach(animation => animation.tl.play())
+})
+document.getElementById('tlPause').addEventListener('click', (ev) => {
+    animations.forEach(animation => animation.tl.pause())
+})

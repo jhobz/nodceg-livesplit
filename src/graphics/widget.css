@@ -306,7 +306,6 @@ label {
     border: 5px solid var(--color-animation-info-transition-leader);
     border-top: none;
     border-bottom: none;
-    box-sizing: border-box;
 }
 
 .widget-inner-left .transition-box {

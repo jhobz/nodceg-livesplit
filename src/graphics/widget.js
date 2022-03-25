@@ -151,7 +151,7 @@ function onUndoSplit(segment) {
 
 /* =================== ANIMATIONS =================== */
 
-function createTransitionTimeline() {
+function createTransitionTimeline(duration = 2850) {
     const fullWidth = anime.get(document.querySelector('.widget-right-animations'), 'width')
     const easeOut = 'easeOutCubic'
     const easeIn = 'easeInCubic'
@@ -164,52 +164,48 @@ function createTransitionTimeline() {
     const smallBoxAnim = {
         targets: '.widget-right-animations .transition-box-small',
         translateX: [
-            { value: fullWidth, duration: 500 },
+            { value: fullWidth, duration: .175 * duration },
             { value: 0, duration: 0 },
-            { value: fullWidth, duration: 500, delay: 1850, easing: easeIn }
+            { value: fullWidth, duration: .175 * duration, delay: .649 * duration, easing: easeIn }
         ]
     }
 
     const largeBoxAnim = {
         targets: '.widget-right-animations .transition-box-large',
-        width: [
-            { value: [0, '100%'], duration: 500 },
-            { value: 0, duration: 500, delay: 1500, easing: easeIn },
-        ],
         translateX: [
-            { value: fullWidth, duration: 500, delay: 2000, easing: easeIn }
+            { value: ['-100%', 0], duration: .175 * duration },
+            { value: fullWidth, duration: .175 * duration, delay: .526 * duration, easing: easeIn }
         ]
     }
 
     const textAnim = {
         targets: '#widget-right-transition-text',
         translateX: [
-            { value: ['-200%', 0], duration: 333 },
-            { value: 20, duration: 1500, easing: 'linear' },
-            { value: '200%', duration: 333, easing: easeIn }
+            { value: ['-200%', 0], duration: .117 * duration },
+            { value: 20, duration: .526 * duration, easing: 'linear' },
+            { value: '200%', duration: .117 * duration, easing: easeIn }
         ]
     }
 
-    tl.add(smallBoxAnim).add(largeBoxAnim, 133).add(textAnim, 300)
+    tl.add(smallBoxAnim).add(largeBoxAnim, .047 * duration).add(textAnim, .105 * duration)
 
     return tl
 }
 
-function createGoldSplitTimeline() {
+function createGoldSplitTimeline(duration = 13325) {
     const easeOut = 'easeOutCubic'
-    const easeIn = 'easeInCubic'
 
     const tl = anime.timeline({
         easing: easeOut,
         autoplay: false,
-        duration: 300
+        duration: .0225 * duration
     })
 
-    const logoOut = logoExit()
+    const logoOut = logoExit(.4503 * duration)
     const logoIn = {
         targets: '.widget-inner-circle',
         scale: 1,
-        duration: 500,
+        duration: .0375 * duration,
         easing: 'easeOutElastic'
     }
 
@@ -217,7 +213,7 @@ function createGoldSplitTimeline() {
         targets: '#widget-full-animations .transition-circle',
         scale: [0, 6],
         opacity: 0,
-        delay: anime.stagger(200, { easing: 'easeOutQuad' })
+        delay: anime.stagger(.015 * duration, { easing: 'easeOutQuad' })
     }
 
     const fillBoxIn = {
@@ -229,8 +225,8 @@ function createGoldSplitTimeline() {
         targets: '#widget-full-animations .text',
         scale: [
             { value: 0, duration: 0 },
-            { value: 0.9, duration: 300 },
-            { value: 1, duration: 5000, easing: 'linear' }
+            { value: 0.9 },
+            { value: 1, duration: .375 * duration, easing: 'linear' }
         ],
         opacity: [0, 1]
     }
@@ -239,21 +235,24 @@ function createGoldSplitTimeline() {
         targets: ['#widget-full-animations .text', '#widget-full-animations .transition-circle-full'],
         scale: 1.5,
         opacity: 0,
-        duration: 1000,
-        delay: anime.stagger(500)
+        duration: .075 * duration,
+        delay: anime.stagger(.0375 * duration)
     }
 
     tl.add(logoOut)
-        .add(pulse, '-=500')
-        .add(fillBoxIn, '-=250')
-        .add(textIn, '-=100')
+        .add(pulse, `-=${.0375 * duration}`)
+        .add(fillBoxIn, `-=${.0188 * duration}`)
+        .add(textIn, `-=${.0075 * duration}`)
         .add(textAndFillBoxOut)
-        .add(logoIn, '-=300')
+        .add(logoIn, `-=${.0225 * duration}`)
 
     return tl
 }
 
-function logoExit() {
+function logoExit(duration = 6000) {
+    if (duration < 1950) {
+        throw new Error('logoExit has a minimum duration of 1950')
+    }
     addMotionBlur('.widget-inner-circle')
 
     // We set this in the CSS classes, but the animation will override it if we don't set it inline
@@ -263,81 +262,31 @@ function logoExit() {
 
     return {
         targets: '.widget-inner-circle',
-        scale: [
-            { value: 1, duration: 4000 },
-            { value: 1.5, duration: 1000, easing: 'easeInQuad' },
-            { value: 0, duration: 1000, easing: 'easeInElastic' }
-        ],
-        rotate: [
-            { value: 1080 * 27, duration: 6000, easing: 'easeInExpo', delay: anime.stagger(10) },
-        ],
         translateX: [
-            { value: '-50%', duration: 4000 },
-            { value: anime.random(-51, -49) + '%', duration: 50 },
-            { value: anime.random(-51, -49) + '%', duration: 50 },
-            { value: anime.random(-51, -49) + '%', duration: 50 },
-            { value: anime.random(-51, -49) + '%', duration: 50 },
-            { value: anime.random(-51, -49) + '%', duration: 50 },
-            { value: anime.random(-51, -49) + '%', duration: 50 },
-            { value: anime.random(-51, -49) + '%', duration: 50 },
-            { value: anime.random(-51, -49) + '%', duration: 50 },
-            { value: anime.random(-51, -49) + '%', duration: 50 },
-            { value: anime.random(-51, -49) + '%', duration: 50 },
-            { value: anime.random(-52, -48) + '%', duration: 50 },
-            { value: anime.random(-52, -48) + '%', duration: 50 },
-            { value: anime.random(-52, -48) + '%', duration: 50 },
-            { value: anime.random(-52, -48) + '%', duration: 50 },
-            { value: anime.random(-52, -48) + '%', duration: 50 },
-            { value: anime.random(-52, -48) + '%', duration: 50 },
-            { value: anime.random(-52, -48) + '%', duration: 50 },
-            { value: anime.random(-52, -48) + '%', duration: 50 },
-            { value: anime.random(-52, -48) + '%', duration: 50 },
-            { value: anime.random(-52, -48) + '%', duration: 50 },
-            { value: anime.random(-53, -47) + '%', duration: 50 },
-            { value: anime.random(-53, -47) + '%', duration: 50 },
-            { value: anime.random(-53, -47) + '%', duration: 50 },
-            { value: anime.random(-53, -47) + '%', duration: 50 },
-            { value: anime.random(-53, -47) + '%', duration: 50 },
-            { value: '-50%', duration: 50 },
-            { value: '-50%', duration: 700 }
+            { value: '-50%', duration: .333 * duration },
+            ...generateVibrationKeyframes(-10, 10, .667 * duration, 80),
+            { value: '-50%', duration: 0 }
         ],
         translateY: [
-            { value: 0, duration: 4000 },
-            { value: anime.random(-1, 1) + '%', duration: 50 },
-            { value: anime.random(-1, 1) + '%', duration: 50 },
-            { value: anime.random(-1, 1) + '%', duration: 50 },
-            { value: anime.random(-1, 1) + '%', duration: 50 },
-            { value: anime.random(-1, 1) + '%', duration: 50 },
-            { value: anime.random(-1, 1) + '%', duration: 50 },
-            { value: anime.random(-1, 1) + '%', duration: 50 },
-            { value: anime.random(-1, 1) + '%', duration: 50 },
-            { value: anime.random(-1, 1) + '%', duration: 50 },
-            { value: anime.random(-1, 1) + '%', duration: 50 },
-            { value: anime.random(-2, 2) + '%', duration: 50 },
-            { value: anime.random(-2, 2) + '%', duration: 50 },
-            { value: anime.random(-2, 2) + '%', duration: 50 },
-            { value: anime.random(-2, 2) + '%', duration: 50 },
-            { value: anime.random(-2, 2) + '%', duration: 50 },
-            { value: anime.random(-2, 2) + '%', duration: 50 },
-            { value: anime.random(-2, 2) + '%', duration: 50 },
-            { value: anime.random(-2, 2) + '%', duration: 50 },
-            { value: anime.random(-2, 2) + '%', duration: 50 },
-            { value: anime.random(-2, 2) + '%', duration: 50 },
-            { value: anime.random(-3, 3) + '%', duration: 50 },
-            { value: anime.random(-3, 3) + '%', duration: 50 },
-            { value: anime.random(-3, 3) + '%', duration: 50 },
-            { value: anime.random(-3, 3) + '%', duration: 50 },
-            { value: anime.random(-3, 3) + '%', duration: 50 },
-            { value: 0, duration: 50 },
-            { value: 0, duration: 700 }
+            { value: 0, duration: .333 * duration },
+            ...generateVibrationKeyframes(-10, 10, .667 * duration, 80),
+            { value: 0, duration: 0 },
+        ],
+        scale: [
+            { value: 1, duration: .667 * duration },
+            { value: 1.5, duration: .167 * duration, easing: 'easeInQuad' },
+            { value: 0, duration: .167 * duration, easing: 'easeInElastic' }
+        ],
+        rotate: [
+            { value: 360 * 45, duration, easing: 'easeInCirc', delay: anime.stagger(10) },
         ],
         borderColor: [
-            { value: COLORS.white, duration: 3000, delay: 1000, easing: 'easeInExpo' },
-            { value: COLORS.accent, duration: 1000, delay: 750, easing: 'easeInExpo' },
-            { value: COLORS.black, delay: 250 },
+            { value: COLORS.white, duration: .5 * duration, delay: .167 * duration, easing: 'easeInExpo' },
+            { value: COLORS.accent, duration: .167 * duration, delay: .125 * duration, easing: 'easeInExpo' },
+            { value: COLORS.black, delay: .042 * duration },
         ],
         backgroundColor: [
-            { value: COLORS.accent, duration: 1000, delay: 5000, easing: 'easeInExpo' },
+            { value: COLORS.accent, duration: .167 * duration, delay: .833 * duration, easing: 'easeInExpo' },
             { value: COLORS.secondary }
         ]
     }
@@ -353,6 +302,44 @@ function addMotionBlur(selector, steps = 10) {
         dupe.style.boxShadow = 'none'
         parent.appendChild(dupe)
     }
+}
+
+// Creates random vibrations with a ramp in ferocity over the duration
+function generateVibrationKeyframes(min, max, duration, steps = 20, shouldEase = true) {
+    const shifts = []
+    const stepDuration = duration / steps
+    const stepClamp = steps / 10
+
+    for (let i = 0; i < steps; i++) {
+        let weightedChunk = (max - min) / (stepClamp - i / (steps - 1) * (stepClamp - 1))
+        if (!shouldEase) {
+            weightedChunk = max - min 
+        }
+        const random = Math.random() * weightedChunk - weightedChunk / 2
+        shifts.push({ value: `+=${random}`, duration: stepDuration / 2, easing: 'easeInOutQuart'}) 
+        shifts.push({ value: `-=${random}`, duration: stepDuration / 2, easing: 'easeInOutQuart'}) 
+    }
+
+    return shifts
+}
+
+// Not in use.
+// TODO: Convert to generate a single thrash, then make another function for multiple.
+//       Generalize for more uses, including option to return to center or not.
+// Creates some thrashes for the circle logo, with a little bit of randomness
+function generateThrashes(min, max, duration, offset) {
+    const spread = (max - min) / 2
+    const direction = Math.sign(Math.random() - 0.5) || 1
+    const distance = Math.random() * spread
+    const value = spread + direction * distance
+
+    return [
+        { value: offset ? `+=${value}` : `+=${max}`, duration: 0.2 * duration, easing: 'easeOutElastic' },
+        { value: offset ? `-=${value}` : `-=${max}`, duration: 0.2 * duration, easing: 'easeInOutExpo' },
+        { value: offset ? `+=${min}` : `+=${value}`, duration: 0.2 * duration, delay: 0.1 * duration, easing: 'easeOutElastic' },
+        { value: offset ? `-=${min}` : `-=${value}`, duration: 0.2 * duration, easing: 'easeInOutExpo' },
+        { value: offset ? `+=${max}` : `+=${min}`, duration: 0.1 * duration, easing: 'easeOutElastic' },
+    ]
 }
 
 

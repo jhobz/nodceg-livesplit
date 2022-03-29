@@ -127,9 +127,10 @@ function onSplit(segment) {
 
         // Play gold split animation
         const animation = animations[1]
-        document.querySelector('#widget-full-animations').style.visibility = 'visible'
+        const animationElement = document.querySelector('#widget-full-animations')
+        animationElement.style.visibility = 'visible'
         animation.tl.finished.then(() => {
-            document.querySelector('#widget-full-animations').style.visibility = 'hidden'
+            animationElement.style.visibility = 'hidden'
         })
         animation.tl.play()
 
@@ -139,6 +140,11 @@ function onSplit(segment) {
     }
 
     // Display some additional info about the segment
+    const trayElement = document.querySelector('.widget-right-tray')
+    setTimeout(() => {
+        trayElement.classList.remove('show')
+    }, 5000)
+    trayElement.classList.add('show')
 }
 
 function onUndoSplit(segment) {

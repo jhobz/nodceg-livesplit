@@ -18,6 +18,11 @@
         The calculation is tan(t)*h/w to get the percentage of width for the triangle. */
     --trapezoid-ratio: 3.83%;
 
+    --widget-upper-width: 420px;
+    --widget-upper-height: 60px;
+    --widget-inner-width: calc(var(--widget-upper-width) - 2pt);
+    --widget-inner-height: calc(var(--widget-upper-height) - 2pt);
+
     /* animations */
     --color-animation-info-transition-leader: var(--color-white);
     --color-animation-info-transition-bg: var(--color-secondary);
@@ -53,12 +58,13 @@ label {
 .widget-container {
     margin: 50px 0 0 50px;
     display: inline-block;
+    position: relative;
 }
 
 .widget-upper-border {
     position: relative;
-    width: 420px;
-    height: 60px;
+    width: var(--widget-upper-width);
+    height: var(--widget-upper-height);
     overflow: visible;
     filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.75));
 }
@@ -81,8 +87,8 @@ label {
     align-items: center;
     top: 1pt;
     left: 1pt;
-    width: calc(420px - 2pt);
-    height: calc(60px - 2pt);
+    width: var(--widget-inner-width);
+    height: var(--widget-inner-height);
     color: var(--color-white);
 }
 .widget-upper::after {
@@ -139,6 +145,42 @@ label {
     border-radius: 50%;
     border: 2pt solid var(--color-black);
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.75);
+}
+
+.widget-right-tray {
+    position: absolute;
+    min-width: 25%;
+    height: var(--widget-upper-height);
+    right: var(--trapezoid-ratio);
+    top: 0;
+    z-index: -1;
+    background-color: var(--color-primary);
+    border: 1pt solid var(--color-white);
+    border-left: none;
+    box-sizing: border-box;
+    transform: skewX(-15deg);
+    transition: transform 500ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+.widget-right-tray::after {
+    content: '';
+    position: absolute;
+    inset: -1pt; /* account for the border */
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.75);
+    opacity: 0;
+    transition: opacity 300ms ease-in;
+}
+
+.widget-right-tray.show {
+    transform: skewX(-15deg) translateX(calc(100% + 2 * var(--trapezoid-ratio)));
+}
+
+.widget-right-tray.show::after {
+    opacity: 1;
+
+    /* the box-shadow shouldn't disappear before the tray closes */
+    transition-delay: 200ms;
+    transition-timing-function: ease-out;
 }
 
 /* widget lower */

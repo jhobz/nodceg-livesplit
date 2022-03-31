@@ -122,13 +122,14 @@ function detectSplit(prevTime, nextTime) {
 	segment.isComplete = nextTime.splitIndex > 0 && parseInt(nextTime.splitIndex) > prevTime.splitIndex && nextTime.previousSplitTime !== '0.00'
 
 	// For now, we're just skipping over segments that include a skipped split (i.e. multiple segments in a single "split" event).
-	// TODO: Find a better solution for this? Might require a Livesplit.Server channge
+	// TODO: Find a better solution for this? Might require a Livesplit.Server change
 	if (prevTime.previousSplitTime === '0.00' && prevTime.splitIndex > 0) {
 		segment.isComplete = false
 	}
 
 	if (segment.isComplete) {
 		segment.duration = timeDiff(nextTime.previousSplitTime, prevTime.previousSplitTime || '0')
+		segment.delta = timeDiff(nextTime.delta, prevTime.delta !== '-' ? prevTime.delta : '0', true)
 
 		// TODO: Remove this once information is received from the server all at once.
 		// Since we poll the server for each piece of information individually, there are times where a segment could end
@@ -155,21 +156,22 @@ function detectSplit(prevTime, nextTime) {
 
 // TODO: Split these utility functions into a "Time" class, potentially converting all time strings into Time objects
 //       so that the comparators can be overridden as well (via .valueOf())
-function timeSum(t1, t2) {
+function timeSum(t1, t2, includeSymbol) {
 	const time = _convertTimeToMs(t1) + _convertTimeToMs(t2)
-	return { time, text: _convertMsToTime(time) }
+
+	return { time, text: _convertMsToTime(time, includeSymbol) }
 }
 
-function timeDiff(t1, t2) {
+function timeDiff(t1, t2, includeSymbol) {
 	const time = _convertTimeToMs(t1) - _convertTimeToMs(t2)
-	return { time, text: _convertMsToTime(time) }
+
+	return { time, text: _convertMsToTime(time, includeSymbol) }
 }
 
 function _convertTimeToMs(time) {
-	if (parseInt(time.charAt(0)) === NaN) {
-		time = time.slice(1)
-	}
-
+	// Clean input for delta strings, LiveSplit uses Unicode symbol 0x2212 for minus signs
+	time = time.replace('−', '-')
+	time = time.replace('+', '')
 	time = time.split(':').reverse()
 
 	if (time.length <= 0 || time.length > 3) {
@@ -179,8 +181,11 @@ function _convertTimeToMs(time) {
 	return time.reduce((sum, next, index) => sum + next * Math.pow(60, index) * 1000, 0)
 }
 
-function _convertMsToTime(ms) {
-	const neg = ms < 0 ? '-' : ''
+function _convertMsToTime(ms, includeSymbol) {
+	let symbol = ms < 0 ? '-' : ''
+	if (includeSymbol) {
+		symbol = ms < 0 ? '−' : '+'
+	}
 	let hrs = 0, mins = 0, secs = Math.abs(Math.floor(ms / 1000))
 	ms = Math.abs((ms % 1000) / 10)
 
@@ -201,5 +206,5 @@ function _convertMsToTime(ms) {
 		ms = '0' + ms
 	}
 
-	return `${neg}${hrs ? hrs + ':' : ''}${hrs || mins ? mins + ':' : ''}${secs}.${ms}`
+	return `${symbol}${hrs ? hrs + ':' : ''}${hrs || mins ? mins + ':' : ''}${secs}.${ms}`
 }

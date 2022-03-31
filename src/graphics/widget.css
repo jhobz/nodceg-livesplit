@@ -59,6 +59,7 @@ label {
     margin: 50px 0 0 50px;
     display: inline-block;
     position: relative;
+    color: var(--color-white);
 }
 
 .widget-upper-border {
@@ -89,7 +90,6 @@ label {
     left: 1pt;
     width: var(--widget-inner-width);
     height: var(--widget-inner-height);
-    color: var(--color-white);
 }
 .widget-upper::after {
     content: '';
@@ -148,16 +148,21 @@ label {
 }
 
 .widget-right-tray {
+    display: flex;
     position: absolute;
     min-width: 25%;
+    max-width: 50%;
     height: var(--widget-upper-height);
-    right: var(--trapezoid-ratio);
+    right: calc(0.5 * var(--trapezoid-ratio));
     top: 0;
     z-index: -1;
+    padding: 0 1rem;
     background-color: var(--color-primary);
     border: 1pt solid var(--color-white);
     border-left: none;
     box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
     transform: skewX(-15deg);
     transition: transform 500ms cubic-bezier(0.87, 0, 0.13, 1);
 }
@@ -172,7 +177,7 @@ label {
 }
 
 .widget-right-tray.show {
-    transform: skewX(-15deg) translateX(calc(100% + 2 * var(--trapezoid-ratio)));
+    transform: skewX(-15deg) translateX(100%);
 }
 
 .widget-right-tray.show::after {

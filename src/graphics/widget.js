@@ -49,10 +49,12 @@ const animations = [
     new Animation('gold', 13325),
 ]
 
+let isTakeoverMode = false
 let currentInfoIndex = 0
+let currentDelta
 
 fitty('.shrink-fit > p', {
-    minSize: 12,
+    minSize: 24,
     maxSize: 56
 })
 
@@ -87,7 +89,9 @@ rLivesplit.on('change', (newValue, oldValue) => {
 /* =================== MESSAGES =================== */
 
 nodecg.listenFor('changeInfoDisplay', () => {
-    changeInfoDisplay()
+    if (!isTakeoverMode) {
+        changeInfoDisplay()
+    }
 })
 
 nodecg.listenFor('split', segment => {
@@ -123,28 +127,38 @@ function changeInfoDisplay(playAnimation = true) {
 
 function onSplit(segment) {
     if (segment.isGold) {
-        // Pause/cancel all other animations
+        // Prevent other animations
+        isTakeoverMode = true
 
         // Play gold split animation
         const animation = animations[1]
         const animationElement = document.querySelector('#widget-full-animations')
         animationElement.style.visibility = 'visible'
-        animation.tl.finished.then(() => {
-            animationElement.style.visibility = 'hidden'
-        })
         animation.tl.play()
 
-        // Add some delay for the next animation
+        // Add some delay for the next animation?
 
         // Resume other animations
+        animation.tl.finished.then(() => {
+            animationElement.style.visibility = 'hidden'
+            isTakeoverMode = false
+        })
     }
 
     // Display some additional info about the segment
     const trayElement = document.querySelector('.widget-right-tray')
+    trayElement.querySelector('.shrink-fit > p').innerText = segment.delta.text
+    if (segment.delta.time < 0) {
+        trayElement.classList.add('timer-ahead')
+        trayElement.classList.remove('timer-behind')
+    } else {
+        trayElement.classList.remove('timer-ahead')
+        trayElement.classList.add('timer-behind')
+    }
+    trayElement.classList.add('show')
     setTimeout(() => {
         trayElement.classList.remove('show')
     }, 5000)
-    trayElement.classList.add('show')
 }
 
 function onUndoSplit(segment) {
@@ -153,6 +167,8 @@ function onUndoSplit(segment) {
         animations[i].tl.restart()
         animations[i].tl.pause()
     }
+
+    isTakeoverMode = false
 }
 
 /* =================== ANIMATIONS =================== */
